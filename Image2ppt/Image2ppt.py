@@ -25,11 +25,14 @@ class AppendPPT():
 
         output_path = filedialog.askdirectory()
 
+        append_slide = AppendSlide()
 
-        prs = self.append_images_in_ppt(img_count,input_path,img)
+        prs = append_slide.append_images_in_ppt(img_count,input_path,img)
 
         #specify savename
         prs.save(output_path+'/test.pptx')
+
+class AppendSlide():
 
     def append_images_in_ppt(self,img_count,input_path,img):
         #Generate ppt and specify slide types
