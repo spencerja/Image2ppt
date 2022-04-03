@@ -17,7 +17,7 @@ class CreateGUI:
     def __init__(self):
         self.root = Tk()
         self.root.minsize(width=500, height=300)
-        self.root.title("GUI")
+        self.root.title("Image2ppt")
         self.frame = None
         self.label1 = None
         self.textbox = None
@@ -87,6 +87,7 @@ class CreateGUI:
 
         prs = append_slide.append_images_in_ppt()
         prs.save(output_path + '/'+ self.textbox.get()+'.pptx')
+        os.startfile(output_path + '/'+ self.textbox.get()+'.pptx')
 
     def start_widget(self):
         self.root.mainloop()
@@ -108,6 +109,7 @@ class AppendPPT:
 
         prs = append_slide.append_images_in_ppt()
         prs.save(output_path + '/test.pptx')
+
 
 #this is not used in production
 class AddTest:
