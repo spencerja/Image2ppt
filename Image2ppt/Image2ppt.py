@@ -5,6 +5,7 @@ import tkinter
 from tkinter import filedialog
 from tkinter import *
 from tkinter import ttk
+import io
 from PIL import Image
 # Utilizes python-pptx: https://python-pptx.readthedocs.io/
 
@@ -138,6 +139,10 @@ class AppendSlide:
 
     def append_images(self, prs):
         blank_slide = prs.slide_layouts[6]
+        pixel_width = int(960 / self.column)
+        pixel_height = int(540 / self.row)
+        width = self.ppt_width / self.column
+        height = self.ppt_height / self.row
 
         for i in range(self.img_count):
             if i % self.img_iter == 0:
@@ -146,11 +151,32 @@ class AppendSlide:
             horizontal = Inches((i % self.column) * (self.ppt_width / self.column))
             vertical = Inches((i % self.img_iter // self.column) * self.ppt_height / self.row)
 
-            #current_img = Image.open(self.input_path + '/' + self.img_list[i])
-            #resized_img = current_img.resize((int(self.ppt_width / self.column), int(self.ppt_height / self.row)))
+            current_img = Image.open(self.input_path + '/' + self.img_list[i])
 
-            image_slide.shapes.add_picture(self.input_path + '/' + self.img_list[i], horizontal, vertical,
-                                           height=Inches(self.ppt_width / self.column))
+            # if current_img.width > current_img.height:
+            #     if pixel_width < pixel_height:
+            #         ratio = pixel_width/ current_img.width
+            #     else:
+            #         ratio = pixel_height / current_img.width
+            # else:
+            #     if pixel_width < pixel_height:
+            #         ratio = pixel_width / current_img.height
+            #     else:
+            #         ratio = pixel_height / current_img.height
+
+            if current_img.width > current_img.height:
+                ratio = pixel_width/ current_img.width
+            else:
+                ratio = pixel_height / current_img.height
+
+            if current_img.width == current_img.height:
+                ratio = min(pixel_width,pixel_height)/current_img.width
+            #print(current_img.width * ratio, current_img.height * ratio)
+            print((int(current_img.width * ratio), int(current_img.height * ratio)))
+            resized_img = current_img.resize((int(current_img.width * ratio), int(current_img.height * ratio)))
+            with io.BytesIO() as output:
+                resized_img.save(output, format="GIF")
+                image_slide.shapes.add_picture(output, horizontal, vertical)
 
             # if self.img_width < self.img_height:
             #     image_slide.shapes.add_picture(self.input_path + '/' + self.img_list[i], horizontal, vertical,
