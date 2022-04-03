@@ -5,7 +5,7 @@ import tkinter
 from tkinter import filedialog
 from tkinter import *
 from tkinter import ttk
-
+from PIL import Image
 # Utilizes python-pptx: https://python-pptx.readthedocs.io/
 
 
@@ -124,6 +124,8 @@ class AppendSlide:
 
     def get_images(self, input_path):
         img_list = os.listdir(input_path)
+        for i in img_list:
+            print(i)
         return img_list
 
     # generate ppt and add images to the ppt
@@ -144,13 +146,18 @@ class AppendSlide:
             horizontal = Inches((i % self.column) * (self.ppt_width / self.column))
             vertical = Inches((i % self.img_iter // self.column) * self.ppt_height / self.row)
 
+            #current_img = Image.open(self.input_path + '/' + self.img_list[i])
+            #resized_img = current_img.resize((int(self.ppt_width / self.column), int(self.ppt_height / self.row)))
 
-            if self.img_width < self.img_height:
-                image_slide.shapes.add_picture(self.input_path + '/' + self.img_list[i], horizontal, vertical,
-                                               height=Inches(self.ppt_width / self.column))
-            else:
-                image_slide.shapes.add_picture(self.input_path + '/' + self.img_list[i], horizontal, vertical,
-                                            width=Inches(self.ppt_height / self.row))
+            image_slide.shapes.add_picture(self.input_path + '/' + self.img_list[i], horizontal, vertical,
+                                           height=Inches(self.ppt_width / self.column))
+
+            # if self.img_width < self.img_height:
+            #     image_slide.shapes.add_picture(self.input_path + '/' + self.img_list[i], horizontal, vertical,
+            #                                    height=Inches(self.ppt_width / self.column))
+            # else:
+            #     image_slide.shapes.add_picture(self.input_path + '/' + self.img_list[i], horizontal, vertical,
+            #                                 width=Inches(self.ppt_height / self.row))
 
         return prs
 
