@@ -5,7 +5,7 @@ import tkinter
 from tkinter import filedialog
 from tkinter import *
 from tkinter import ttk
-import functools
+
 # Utilizes python-pptx: https://python-pptx.readthedocs.io/
 
 def main():
@@ -20,15 +20,15 @@ class CreateGUI:
         self.root.title("GUI")
         self.frame = None
         self.label1 = None
-        self.path_list = [None, None]
+        self.path_list = [r"C:\Users\Fridge\Documents\PYGit\Image2ppt\Image2ppt\Input", r"C:\Users\Fridge\Documents\PYGit\Image2ppt\Image2ppt\Output"]
 
     def construct_form(self):
         self.create_widget()
-        self.label1 = self.create_label("initial path",0,0)
+        self.label1 = self.create_label(self.path_list[0],0,0)
         button1 = self.create_button("Input path",0,1)
         button1.bind("<ButtonPress>",lambda event: self.get_path(event,self.label1))
 
-        self.label2 = self.create_label("initial path",1,0)
+        self.label2 = self.create_label(self.path_list[1],1,0)
         button2 = self.create_button("Output path", 1, 1)
         button2.bind("<ButtonPress>", lambda event: self.get_path(event,self.label2))
 
@@ -63,7 +63,8 @@ class CreateGUI:
 
     def get_path(self, event,arg):
         selected_path = filedialog.askdirectory()
-        arg.configure(text=selected_path)
+        if not selected_path=="":
+            arg.configure(text=selected_path)
 
     def whole_process(self,event):
         tkinter.Tk().withdraw()
@@ -98,6 +99,10 @@ class AppendPPT:
         prs = append_slide.append_images_in_ppt()
         prs.save(output_path + '/test.pptx')
 
+#this is not used in production
+class AddTest:
+    def add_test(self,a,b):
+        return a+b
 
 class AppendSlide:
     # initial value loading
@@ -141,6 +146,7 @@ class AppendSlide:
                                            height=Inches(self.ppt_width / self.column))
 
         return prs
+
 
 
 if __name__ == "__main__":
