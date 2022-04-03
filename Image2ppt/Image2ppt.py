@@ -13,9 +13,6 @@ def main():
     create_gui = CreateGUI()
     create_gui.construct_form()
 
-
-
-
 class CreateGUI:
     def __init__(self):
         self.root = Tk()
@@ -23,25 +20,29 @@ class CreateGUI:
         self.root.title("GUI")
         self.frame = None
         self.label1 = None
+        self.path_list = [None, None]
 
     def construct_form(self):
         self.create_widget()
-        label1 = self.create_label("initial path",0,0)
+        self.label1 = self.create_label("initial path",0,0)
         button1 = self.create_button("Input path",0,1)
-        button1.bind("<ButtonPress>",lambda event: self.get_path(event,label1))
+        button1.bind("<ButtonPress>",lambda event: self.get_path(event,self.label1))
 
-        label2 = self.create_label("initial path",1,0)
+        self.label2 = self.create_label("initial path",1,0)
         button2 = self.create_button("Output path", 1, 1)
-        button2.bind("<ButtonPress>", lambda event: self.get_path(event,label2))
+        button2.bind("<ButtonPress>", lambda event: self.get_path(event,self.label2))
 
         button3 = self.create_button("Start",2,1)
-        button3.bind("<ButtonPress>",self.whole_process)
+        button3.bind("<ButtonPress>", lambda event: self.whole_process(event))
 
         self.start_widget()
 
     def create_widget(self):
         self.frame = ttk.Frame(self.root, padding=40)
         self.frame.grid()
+
+    def update_path_list(self):
+        self.path_list = [self.label1.cget("text"), self.label2.cget("text")]
 
     def create_label(self,text,row,column):
         label1 = ttk.Label(
@@ -62,14 +63,14 @@ class CreateGUI:
 
     def get_path(self, event,arg):
         selected_path = filedialog.askdirectory()
-
         arg.configure(text=selected_path)
 
     def whole_process(self,event):
         tkinter.Tk().withdraw()
         append_ppt = AppendPPT()
-        input_path = append_ppt.get_path()
-        output_path = append_ppt.get_path()
+        path_list = [self.label1.cget("text"), self.label2.cget("text")]
+        input_path = path_list[0]
+        output_path = path_list[1]
 
         append_slide = AppendSlide(input_path)
 
