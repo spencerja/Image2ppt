@@ -20,6 +20,7 @@ class CreateGUI:
         self.root.title("GUI")
         self.frame = None
         self.label1 = None
+        self.textbox = None
         self.path_list = [r"C:\Users\Fridge\Documents\PYGit\Image2ppt\Image2ppt\Input", r"C:\Users\Fridge\Documents\PYGit\Image2ppt\Image2ppt\Output"]
 
     def construct_form(self):
@@ -32,8 +33,11 @@ class CreateGUI:
         button2 = self.create_button("Output path", 1, 1)
         button2.bind("<ButtonPress>", lambda event: self.get_path(event,self.label2))
 
+        self.textbox = self.create_textbox("test", 2, 0)
+
         button3 = self.create_button("Start",2,1)
         button3.bind("<ButtonPress>", lambda event: self.whole_process(event))
+
 
         self.start_widget()
 
@@ -43,6 +47,12 @@ class CreateGUI:
 
     def update_path_list(self):
         self.path_list = [self.label1.cget("text"), self.label2.cget("text")]
+
+    def create_textbox(self,text,row,column):
+        txt = ttk.Entry(self.frame,width=40)
+        txt.insert(tkinter.END,text)
+        txt.grid(row=row,column=column)
+        return txt
 
     def create_label(self,text,row,column):
         label1 = ttk.Label(
@@ -76,7 +86,7 @@ class CreateGUI:
         append_slide = AppendSlide(input_path)
 
         prs = append_slide.append_images_in_ppt()
-        prs.save(output_path + '/test.pptx')
+        prs.save(output_path + '/'+ self.textbox.get()+'.pptx')
 
     def start_widget(self):
         self.root.mainloop()
