@@ -5,15 +5,15 @@ import tkinter
 from tkinter import filedialog
 from tkinter import *
 from tkinter import ttk
+import functools
 # Utilizes python-pptx: https://python-pptx.readthedocs.io/
 
 def main():
 
     create_gui = CreateGUI()
-    append_ppt = AppendPPT()
     create_gui.construct_form()
 
-    append_ppt.whole_process()
+
 
 
 class CreateGUI:
@@ -26,10 +26,16 @@ class CreateGUI:
 
     def construct_form(self):
         self.create_widget()
-        label1 = self.create_label()
-        button1 = self.create_button("Input path",self.get_path,0,1)
+        label1 = self.create_label("initial path",0,0)
+        button1 = self.create_button("Input path",0,1)
+        button1.bind("<ButtonPress>",lambda event: self.get_path(event,label1))
 
-        button2 = self.create_button("Start",self.whole_process,1,1)
+        label2 = self.create_label("initial path",1,0)
+        button2 = self.create_button("Output path", 1, 1)
+        button2.bind("<ButtonPress>", lambda event: self.get_path(event,label2))
+
+        button3 = self.create_button("Start",2,1)
+        button3.bind("<ButtonPress>",self.whole_process)
 
         self.start_widget()
 
@@ -37,28 +43,27 @@ class CreateGUI:
         self.frame = ttk.Frame(self.root, padding=40)
         self.frame.grid()
 
-    def create_label(self):
+    def create_label(self,text,row,column):
         label1 = ttk.Label(
             self.frame,
-            text='Hello',
-            background='#0000aa',
-            foreground='#ffffff',
+            text=text,
             padding=(5, 10))
-        label1.grid(row=0, column=0)
+        label1.grid(row=row, column=column)
         return label1
 
-    def create_button(self,text,command,row,column):
+    def create_button(self,text,row,column):
         button1 = ttk.Button(
             self.frame,
             text=text,
             )
-        button1.bind("<ButtonPress>",command)
         button1.grid(row=row, column=column)
         return button1
 
-    def get_path(self, event):
+
+    def get_path(self, event,arg):
         selected_path = filedialog.askdirectory()
-        #self.event.widget.configure(text=selected_path)
+
+        arg.configure(text=selected_path)
 
     def whole_process(self,event):
         tkinter.Tk().withdraw()
