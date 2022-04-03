@@ -123,7 +123,14 @@ class AppendSlide:
         self.input_path = input_path
 
     def get_images(self, input_path):
-        img_list = os.listdir(input_path)
+        folder_files = os.listdir(input_path)
+        img_list = []
+
+        for file in folder_files:
+            if file.endswith('.png') or file.endswith(".tif") or file.endswith(".jpg") or file.endswith(".jpeg"):
+                img_list.append(file)
+
+        print(img_list)
         return img_list
 
     # generate ppt and add images to the ppt
@@ -142,15 +149,13 @@ class AppendSlide:
                 image_slide = prs.slides.add_slide(blank_slide)
 
             horizontal = Inches((i % self.column) * (self.ppt_width / self.column))
-            vertical = Inches((i % self.img_iter // self.column) * self.ppt_height / self.row)
-
+            vertical = Inches((i % self.img_iter // self.column) * (self.ppt_height-self.ppt_width/self.column))
+                #set 1st, 2nd, last rows to different parameters
 
             if self.img_width < self.img_height:
-                image_slide.shapes.add_picture(self.input_path + '/' + self.img_list[i], horizontal, vertical,
-                                               height=Inches(self.ppt_width / self.column))
+                image_slide.shapes.add_picture(self.input_path + '/' + self.img_list[i], horizontal, vertical, height=Inches(self.ppt_width / self.column))
             else:
-                image_slide.shapes.add_picture(self.input_path + '/' + self.img_list[i], horizontal, vertical,
-                                            width=Inches(self.ppt_height / self.row))
+                image_slide.shapes.add_picture(self.input_path + '/' + self.img_list[i], horizontal, vertical, width=Inches(self.ppt_height / self.row))
 
         return prs
 
