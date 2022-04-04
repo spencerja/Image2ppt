@@ -99,17 +99,12 @@ class CreateGUI:
         root.mainloop()
 
 
-#this is not used in production
-class AddTest:
-    def add_test(self,a,b):
-        return a+b
-
 
 class AppendSlide:
     # initial value loading
     def __init__(self, input_path):
-        self.column = 5
-        self.row = 3
+        self.column = 4
+        self.row = 5
 
         self.ppt_width = 13.333
         self.ppt_height = 7.5
@@ -119,10 +114,13 @@ class AppendSlide:
 
         self.img_iter = self.column * self.row
 
-        self.img_list = self.get_images(input_path)
-        self.img_count = len(self.img_list)
+        self.img_list = []
+        self.img_count = 0
 
         self.input_path = input_path
+
+
+
 
     def get_images(self, input_path):
         folder_files = os.listdir(input_path)
@@ -144,6 +142,10 @@ class AppendSlide:
         return prs
 
     def append_images(self, prs):
+
+        self.img_list = self.get_images(self.input_path)
+        self.img_count = len(self.img_list)
+
         blank_slide = prs.slide_layouts[6]
         #in pixels
         pixel_width = int(960 / self.column)
@@ -157,17 +159,30 @@ class AppendSlide:
             if i % self.img_iter == 0:
                 image_slide = prs.slides.add_slide(blank_slide)
 
-            #in inches
-            horizontal = Inches((i % self.column) * (self.ppt_width / self.column))
-            vertical = Inches((i % self.img_iter // self.column) * self.ppt_height / self.row)
-
             current_img = Image.open(self.input_path + '/' + self.img_list[i])
-            ratio = self.get_resize_ratio(current_img,pixel_width,pixel_height)
+            #working in pixels
+            ratio = self.get_resize_ratio(current_img.width,current_img.height,pixel_width,pixel_height)
             resized_img = current_img.resize((int(current_img.width * ratio), int(current_img.height * ratio)))
-
+            print("panel:")
+            print(width*dpi,height*dpi)
+            print("resized:")
+            print(int(current_img.width * ratio),int(current_img.height * ratio))
             margin_width = Inches(width-resized_img.width/dpi)/2
             margin_height = Inches(height-resized_img.height/dpi)/2
 
+            # if 0 <= i and i < self.column:
+            #     horizontal_position = horizontal+ margin_width
+            #     vertical_position = vertical
+            # elif self.column*(self.row-1) <= i and i < self.column*self.row:
+            #     horizontal_position = horizontal + margin_width*2
+            #     vertical_position = vertical + margin_height*2
+            # else:
+            #     horizontal_position = horizontal + margin_width
+            #     vertical_position = vertical + margin_height
+
+            # in inches
+            horizontal = Inches((i % self.column) * (self.ppt_width / self.column))
+            vertical = Inches((i % self.img_iter // self.column) * self.ppt_height / self.row)
 
             with io.BytesIO() as output:
                 resized_img.save(output, format="GIF")
@@ -178,13 +193,13 @@ class AppendSlide:
 
     #resize ratio is determined depending on the orientation of the image
     #if we have a perfect square,we make sure that the picture fits in the slide by choosing the smaller side of the slide compartment
-    def get_resize_ratio(self,img,pixel_width,pixel_height):
-        if img.width > img.height:
-            ratio = pixel_width / img.width
-        elif img.width < img.height:
-            ratio = pixel_height / img.height
-        elif img.width == img.height:
-            ratio = min(pixel_width, pixel_height) / img.width
+    def get_resize_ratio(self,img_width,img_height,pixel_width,pixel_height):
+        if img_width > img_height:
+            ratio = pixel_width / img_width
+        elif img_width < img_height:
+            ratio = pixel_height / img_height
+        elif img_width == img_height:
+            ratio = min(pixel_width, pixel_height) / img_width
         return ratio
 
 
