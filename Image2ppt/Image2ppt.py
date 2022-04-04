@@ -1,14 +1,17 @@
 import os, os.path
 from pptx import Presentation
-from pptx.util import Inches
+from pptx.util import Inches, Pt
 import tkinter
 from tkinter import filedialog
 from tkinter import *
 from tkinter import ttk
 import io
+from pptx.dml.color import RGBColor
+from pptx.enum.shapes import MSO_SHAPE
 from PIL import Image
 import math
 # Utilizes python-pptx: https://python-pptx.readthedocs.io/
+from xlsxwriter import shape
 
 
 def main():
@@ -159,6 +162,7 @@ class AppendSlide:
             if i % self.img_iter == 0:
                 image_slide = prs.slides.add_slide(blank_slide)
 
+
             current_img = Image.open(self.input_path + '/' + self.img_list[i])
             #working in pixels
             ratio = self.get_resize_ratio(current_img.width,current_img.height,pixel_width,pixel_height)
@@ -170,14 +174,15 @@ class AppendSlide:
             horizontal = Inches((i % self.column) * (self.ppt_width / self.column))
             vertical = Inches((i % self.img_iter // self.column) * self.ppt_height / self.row)
 
-            if 0 <= i%self.iter and i%self.iter < self.column:
-                #horizontal_position = horizontal+ margin_width
+            #apply margin
+            if 0 <= i % self.iter and i % self.iter < self.column:
+                # horizontal_position = horizontal+ margin_width
                 vertical_position = vertical
-            elif self.column*(self.row-1) <= i%self.iter and i%self.iter < self.column*self.row:
-                #horizontal_position = horizontal + margin_width * 2
-                vertical_position = vertical + margin_height*2
+            elif self.column * (self.row - 1) <= i % self.iter and i % self.iter < self.column * self.row:
+                # horizontal_position = horizontal + margin_width * 2
+                vertical_position = vertical + margin_height * 2
             else:
-                #horizontal_position = horizontal + margin_width
+                # horizontal_position = horizontal + margin_width
                 vertical_position = vertical + margin_height
 
             horizontal_position = horizontal + margin_width
@@ -186,6 +191,41 @@ class AppendSlide:
                 resized_img.save(output, format="GIF")
                 image_slide.shapes.add_picture(output, horizontal_position, vertical_position)
 
+        # tx_width = 0.1
+        # tx_height = 0.1
+        # tx_top = Inches((self.ppt_height-tx_height)/2)
+        # tx_left= Inches((self.ppt_width-tx_width)/2)
+        # txBox = image_slide.shapes.add_textbox(tx_left,tx_top,Inches(tx_width),Inches(tx_height))
+        # tf = txBox.text_frame
+        #
+        # p = tf.paragraphs[0]
+        # run = p.add_run()
+        # run.text = 'Spam, eggs, and spam'
+        #
+        # font = run.font
+        # font.name = 'Calibri'
+        # font.size = Pt(18)
+        # blueBoxFill = font.fill
+        # blueBoxFill.solid()
+        # blueBoxFillColour = blueBoxFill.fore_color
+        # blueBoxFillColour.rgb = RGBColor(0, 176, 240)
+        # font.bold = True
+        # font.italic = None  # cause value to be inherited from theme
+        tx_width = 4
+        tx_height = 1
+        tx_top = Inches((self.ppt_height-tx_height)/2)
+        tx_left= Inches((self.ppt_width-tx_width)/2)
+        rect0 = image_slide.shapes.add_shape(  # shapeオブジェクト➀を追加
+            MSO_SHAPE.ROUNDED_RECTANGLE,  # 図形の種類を[丸角四角形]に指定
+            tx_left, tx_top,  # 挿入位置の指定　左上の座標の指定
+            Inches(tx_width), Inches(tx_height))  # 挿入図形の幅と高さの指定
+
+        rect0.fill.solid()  # shapeオブジェクト➀を単色で塗り潰す
+        rect0.fill.fore_color.rgb = RGBColor(250, 100, 100)  # RGB指定で色を指定
+
+        pg = rect0.text_frame.paragraphs[0]  # shapeオブジェクト➀のTextFrameの取得
+        pg.text = 'ROUNDED_RECTANGLE'  # TextFrameにテキストを設定
+        pg.font.size = Pt(10)  # テキストの文字サイズを10ポイントとする
 
         return prs
 
@@ -195,6 +235,9 @@ class AppendSlide:
         ratio_height = pixel_height/img_height
         return min(ratio_width,ratio_height)
         return ratio
+
+
+
 
 
 
