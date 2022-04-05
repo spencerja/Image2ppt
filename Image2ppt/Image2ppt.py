@@ -54,8 +54,8 @@ class CreateGUI:
         self.input_path_label = "initial path"
         self.output_path_label = "initial path"
         self.ppt_name_textbox = "test"
-        self.path_list = [r"C:\Users\Spencer Laptop\Documents\py\Image2ppt_Latest\Image2ppt\Input",
-                          r"C:\Users\Spencer Laptop\Documents\py\Image2ppt_Latest\Image2ppt\Output"]
+        self.path_list = [r"C:\Users\Spencer Laptop\Documents\py\Image2ppt__\Image2ppt\Input",
+                          r"C:\Users\Spencer Laptop\Documents\py\Image2ppt__\Image2ppt\Output"]
 
     def construct_form(self):
         components = Components()
@@ -74,9 +74,25 @@ class CreateGUI:
         output_path_button = components.create_button(frame,"Output path", 1, 1)
         output_path_button.bind("<ButtonPress>", lambda event: self.get_path(event, self.output_path_label))
 
-        self.ppt_name_textbox = components.create_textbox(frame, "test", 2, 0)
+        gui_column_desc = components.create_label(frame, "Column Number:", 2, 0)
+        self.gui_column = components.create_textbox(frame, 4, 2, 1)
 
-        start_process_button = components.create_button(frame, "Start", 2, 1)
+        gui_row_desc = components.create_label(frame, "Row Number:", 3, 0)
+        self.gui_row = components.create_textbox(frame, 2, 3, 1)
+
+        gui_ppt_width_desc = components.create_label(frame, "Slide Width:", 4, 0)
+        self.gui_ppt_width = components.create_textbox(frame, 13.333, 4, 1)
+
+        gui_ppt_height_desc = components.create_label(frame, "Slide Height:", 5, 0)
+        self.gui_ppt_height = components.create_textbox(frame, 7.5, 5, 1)
+
+        gui_slide_counter_desc = components.create_label(frame, "Images for each cell:", 6, 0)
+        self.gui_slide_counter = components.create_textbox(frame, 16, 6, 1)
+
+        ppt_name_label = components.create_label (frame, "Save Name:", 7, 0)
+        self.gui_ppt_name_textbox = components.create_textbox(frame, "test", 7, 1)
+
+        start_process_button = components.create_button(frame, "Start", 8, 1)
         start_process_button.bind("<ButtonPress>", lambda event: self.ppt_generation_process(event))
 
         self.start_gui(root)
@@ -92,10 +108,13 @@ class CreateGUI:
         path_list = [self.input_path_label.cget("text"), self.output_path_label.cget("text")]
         input_path = path_list[0]
         output_path = path_list[1]
+        parameters = [self.gui_column.get(), self.gui_row.get(), self.gui_slide_counter.get(), self.gui_ppt_width.get(), self.gui_ppt_height.get()]
+
         append_slide = AppendSlide(input_path)
+        append_slide.get_parameters(parameters)
         prs = append_slide.append_images_in_ppt()
-        prs.save(output_path + '/' + self.ppt_name_textbox.get() + '.pptx')
-        os.startfile(output_path + '/' + self.ppt_name_textbox.get() + '.pptx')
+        prs.save(output_path + '/' + self.gui_ppt_name_textbox.get() + '.pptx')
+        os.startfile(output_path + '/' + self.gui_ppt_name_textbox.get() + '.pptx')
 
     def start_gui(self,root):
         root.mainloop()
@@ -110,23 +129,21 @@ class AddTest:
 class AppendSlide:
     # initial value loading
     def __init__(self, input_path):
-        self.column = 4
-        self.row = 2
-
-        self.ppt_width = 13.333
-        self.ppt_height = 7.5
-
-        self.img_width = self.ppt_width/self.column
-        self.img_height = self.ppt_height/self.row
-
-        self.img_iter = self.column * self.row
-
         self.img_list = self.get_images(input_path)
         self.img_count = len(self.img_list)
 
         self.input_path = input_path
         self.slide_number = 1
-        self.slide_counter = 2
+
+    def get_parameters(self, parameters):
+        self.column = int(parameters[0])
+        self.row =  int(parameters[1])
+        self.ppt_width =  float(parameters[3])
+        self.ppt_height = float(parameters[4])
+        self.img_width = self.ppt_width / self.column
+        self.img_height = self.ppt_height / self.row
+        self.img_iter = self.column * self.row
+        self.slide_counter = int(parameters[2]) / self.img_iter
 
     def get_images(self, input_path):
         folder_files = os.listdir(input_path)
