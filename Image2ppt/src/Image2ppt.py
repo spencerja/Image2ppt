@@ -5,13 +5,14 @@ import tkinter
 from tkinter import filedialog
 from tkinter import *
 from tkinter import ttk
-import io
-from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
+from pptx.dml.color import RGBColor
+import io
 from PIL import Image
+from math import ceil
 import math
+
 # Utilizes python-pptx: https://python-pptx.readthedocs.io/
-from xlsxwriter import shape
 
 
 def main():
@@ -75,9 +76,25 @@ class CreateGUI:
         output_path_button = components.create_button(frame,"Output path", 1, 1)
         output_path_button.bind("<ButtonPress>", lambda event: self.get_path(event, self.output_path_label))
 
-        self.ppt_name_textbox = components.create_textbox(frame, "test", 2, 0)
+        gui_column_desc = components.create_label(frame, "Column Number:", 2, 0)
+        self.gui_column = components.create_textbox(frame, 4, 2, 1)
 
-        start_process_button = components.create_button(frame, "Start", 2, 1)
+        gui_row_desc = components.create_label(frame, "Row Number:", 3, 0)
+        self.gui_row = components.create_textbox(frame, 2, 3, 1)
+
+        gui_ppt_width_desc = components.create_label(frame, "Slide Width:", 4, 0)
+        self.gui_ppt_width = components.create_textbox(frame, 13.333, 4, 1)
+
+        gui_ppt_height_desc = components.create_label(frame, "Slide Height:", 5, 0)
+        self.gui_ppt_height = components.create_textbox(frame, 7.5, 5, 1)
+
+        gui_slide_counter_desc = components.create_label(frame, "Images for each cell:", 6, 0)
+        self.gui_slide_counter = components.create_textbox(frame, 16, 6, 1)
+
+        ppt_name_label = components.create_label (frame, "Save Name:", 7, 0)
+        self.gui_ppt_name_textbox = components.create_textbox(frame, "test", 7, 1)
+
+        start_process_button = components.create_button(frame, "Start", 8, 1)
         start_process_button.bind("<ButtonPress>", lambda event: self.ppt_generation_process(event))
 
         self.start_gui(root)
@@ -93,37 +110,42 @@ class CreateGUI:
         path_list = [self.input_path_label.cget("text"), self.output_path_label.cget("text")]
         input_path = path_list[0]
         output_path = path_list[1]
+        parameters = [self.gui_column.get(), self.gui_row.get(), self.gui_slide_counter.get(), self.gui_ppt_width.get(), self.gui_ppt_height.get()]
+
         append_slide = AppendSlide(input_path)
+        append_slide.get_parameters(parameters)
         prs = append_slide.append_images_in_ppt()
-        prs.save(output_path + '/' + self.ppt_name_textbox.get() + '.pptx')
-        os.startfile(output_path + '/' + self.ppt_name_textbox.get() + '.pptx')
+        prs.save(output_path + '/' + self.gui_ppt_name_textbox.get() + '.pptx')
+        os.startfile(output_path + '/' + self.gui_ppt_name_textbox.get() + '.pptx')
 
     def start_gui(self,root):
         root.mainloop()
 
 
+#this is not used in production
+class AddTest:
+    def add_test(self,a,b):
+        return a+b
+
 
 class AppendSlide:
     # initial value loading
     def __init__(self, input_path):
-        self.column = 4
-        self.row = 2
-        self.iter = self.row*self.column
-        self.ppt_width = 13.333
-        self.ppt_height = 7.5
-
-        self.img_width = self.ppt_width/self.column
-        self.img_height = self.ppt_height/self.row
-
-        self.img_iter = self.column * self.row
-
-        self.img_list = []
-        self.img_count = 0
+        self.img_list = self.get_images(input_path)
+        self.img_count = len(self.img_list)
 
         self.input_path = input_path
+        self.slide_number = 1
 
-
-
+    def get_parameters(self, parameters):
+        self.column = int(parameters[0])
+        self.row =  int(parameters[1])
+        self.ppt_width =  float(parameters[3])
+        self.ppt_height = float(parameters[4])
+        self.img_width = self.ppt_width / self.column
+        self.img_height = self.ppt_height / self.row
+        self.img_iter = self.column * self.row
+        self.slide_counter = int(parameters[2]) / self.img_iter
 
     def get_images(self, input_path):
         folder_files = os.listdir(input_path)
@@ -150,10 +172,10 @@ class AppendSlide:
         self.img_count = len(self.img_list)
 
         blank_slide = prs.slide_layouts[6]
-        #in pixels
+        # in pixels
         pixel_width = int(960 / self.column)
         pixel_height = int(540 / self.row)
-        #in inches
+        # in inches
         width = self.ppt_width / self.column
         height = self.ppt_height / self.row
         dpi = 72
@@ -162,23 +184,22 @@ class AppendSlide:
             if i % self.img_iter == 0:
                 image_slide = prs.slides.add_slide(blank_slide)
 
-
             current_img = Image.open(self.input_path + '/' + self.img_list[i])
-            #working in pixels
-            ratio = self.get_resize_ratio(current_img.width,current_img.height,pixel_width,pixel_height)
+            # working in pixels
+            ratio = self.get_resize_ratio(current_img.width, current_img.height, pixel_width, pixel_height)
             resized_img = current_img.resize((int(current_img.width * ratio), int(current_img.height * ratio)))
 
-            margin_width = Inches(width-resized_img.width/dpi)/2
-            margin_height = Inches(height-resized_img.height/dpi)/2
+            margin_width = Inches(width - resized_img.width / dpi) / 2
+            margin_height = Inches(height - resized_img.height / dpi) / 2
             # in inches
             horizontal = Inches((i % self.column) * (self.ppt_width / self.column))
             vertical = Inches((i % self.img_iter // self.column) * self.ppt_height / self.row)
 
-            #apply margin
-            if 0 <= i % self.iter and i % self.iter < self.column:
+            # apply margin
+            if 0 <= i % self.img_iter and i % self.img_iter < self.column:
                 # horizontal_position = horizontal+ margin_width
                 vertical_position = vertical
-            elif self.column * (self.row - 1) <= i % self.iter and i % self.iter < self.column * self.row:
+            elif self.column * (self.row - 1) <= i % self.img_iter and i % self.img_iter < self.column * self.row:
                 # horizontal_position = horizontal + margin_width * 2
                 vertical_position = vertical + margin_height * 2
             else:
@@ -195,7 +216,7 @@ class AppendSlide:
 
         return prs
 
-    def draw_rectangle(self,image_slide):
+    def draw_rectangle(self, image_slide):
         tx_width = 4
         tx_height = 1
         tx_top = Inches((self.ppt_height - tx_height) / 2)
@@ -212,13 +233,15 @@ class AppendSlide:
         pg.text = 'ROUNDED_RECTANGLE'  # TextFrameにテキストを設定
         pg.font.size = Pt(10)  # テキストの文字サイズを10ポイントとする
 
-    #get ratio for both and use the smaller one to ensure that the image would fit in the slide panel
-    def get_resize_ratio(self,img_width,img_height,pixel_width,pixel_height):
-        ratio_width = pixel_width/img_width
-        ratio_height = pixel_height/img_height
-        return min(ratio_width,ratio_height)
+    # get ratio for both and use the smaller one to ensure that the image would fit in the slide panel
+    def get_resize_ratio(self, img_width, img_height, pixel_width, pixel_height):
+        ratio_width = pixel_width / img_width
+        ratio_height = pixel_height / img_height
+        return min(ratio_width, ratio_height)
         return ratio
+
 
 
 if __name__ == "__main__":
     main()
+

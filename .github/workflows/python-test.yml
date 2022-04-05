@@ -34,6 +34,14 @@ jobs:
         ls
         cd ../test_scr
         ls
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install python-pptx
+        
+    - name: Run Tests    
+      run: python -m unittest Image2ppt/test_src/Image2pptTest.py
     
         
     
