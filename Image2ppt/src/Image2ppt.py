@@ -11,6 +11,7 @@ import io
 from PIL import Image
 from math import ceil
 import math
+import time
 
 # Utilizes python-pptx: https://python-pptx.readthedocs.io/
 
@@ -148,13 +149,34 @@ class AppendSlide:
         self.slide_counter = int(parameters[2]) / self.img_iter
 
     def get_images(self, input_path):
-        folder_files = os.listdir(input_path)
+        #folder_files = os.listdir(input_path)
         img_list = []
-
-        for file in folder_files:
+        dir_name = input_path
+        # Get list of all files only in the given directory
+        list_of_files = filter(lambda x: os.path.isfile(os.path.join(dir_name, x)),
+                               os.listdir(dir_name))
+        # Sort list of files based on last modification time in ascending order
+        list_of_files = sorted(list_of_files,
+                               key=lambda x: os.path.getmtime(os.path.join(dir_name, x))
+                               )
+        # Iterate over sorted list of files and print file path
+        # along with last modification time of file
+        for file_name in list_of_files:
+            file = os.path.join(dir_name, file_name)
+            file = file_name
+            print(file)
             if file.endswith('.png') or file.endswith(".tif") or file.endswith(".jpg") or file.endswith(".jpeg"):
-                img_list.append(file)
+                 img_list.append(file)
+            #     timestamp_str = time.strftime('%m/%d/%Y :: %H:%M:%S',
+            #                                   time.gmtime(os.path.getmtime(file)))
+            #     print(timestamp_str, ' -->', file_name)
 
+
+
+        # for file in folder_files:
+        #     if file.endswith('.png') or file.endswith(".tif") or file.endswith(".jpg") or file.endswith(".jpeg"):
+        #         img_list.append(file)
+        #
         print(img_list)
         return img_list
 
@@ -183,6 +205,14 @@ class AppendSlide:
         for i in range(self.img_count):
             if i % self.img_iter == 0:
                 image_slide = prs.slides.add_slide(blank_slide)
+                cellnumber = str(ceil(self.slide_number / self.slide_counter))
+                central_box = image_slide.shapes.add_textbox(Inches(self.ppt_width / 2 - 0.65),
+                                                             Inches(self.ppt_height / 2 - 0.6), Inches(1), Inches(1))
+                central_label = central_box.text_frame.add_paragraph()
+                central_label.text = "Cell " + cellnumber
+                central_label.font.size = Pt(30)
+                self.slide_number += 1
+                print(self.slide_number)
 
             current_img = Image.open(self.input_path + '/' + self.img_list[i])
             # working in pixels
