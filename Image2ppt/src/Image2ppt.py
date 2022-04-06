@@ -168,16 +168,7 @@ class AppendSlide:
             print(file)
             if file.endswith('.png') or file.endswith(".tif") or file.endswith(".jpg") or file.endswith(".jpeg"):
                  img_list.append(file)
-            #     timestamp_str = time.strftime('%m/%d/%Y :: %H:%M:%S',
-            #                                   time.gmtime(os.path.getmtime(file)))
-            #     print(timestamp_str, ' -->', file_name)
 
-
-
-        # for file in folder_files:
-        #     if file.endswith('.png') or file.endswith(".tif") or file.endswith(".jpg") or file.endswith(".jpeg"):
-        #         img_list.append(file)
-        #
         print(img_list)
         return img_list
 
@@ -206,37 +197,20 @@ class AppendSlide:
         for i in range(self.img_count):
             if i % self.img_iter == 0:
                 image_slide = prs.slides.add_slide(blank_slide)
-                cellnumber = str(ceil(self.slide_number / self.slide_counter))
-                central_box = image_slide.shapes.add_textbox(Inches(self.ppt_width / 2 - 0.65),
-                                                             Inches(self.ppt_height / 2 - 0.6), Inches(1), Inches(1))
-                central_label = central_box.text_frame.add_paragraph()
-                central_label.text = "Cell " + cellnumber
-                central_label.font.size = Pt(30)
-                self.slide_number += 1
-                print(self.slide_number)
+                self.textbox(image_slide)
 
             current_img = Image.open(self.input_path + '/' + self.img_list[i])
             # working in pixels
             ratio = self.get_resize_ratio(current_img.width, current_img.height, pixel_width, pixel_height)
             resized_img = current_img.resize((int(current_img.width * ratio), int(current_img.height * ratio)))
 
-            margin_width = Inches(width - resized_img.width / dpi) / 2
-            margin_height = Inches(height - resized_img.height / dpi) / 2
+            margin_width = self.get_margin(width,resized_img.width,dpi)
+            margin_height = self.get_margin(height,resized_img.height,dpi)
             # in inches
             horizontal = Inches((i % self.column) * (self.ppt_width / self.column))
             vertical = Inches((i % self.img_iter // self.column) * self.ppt_height / self.row)
 
-            # apply margin
-            if 0 <= i % self.img_iter and i % self.img_iter < self.column:
-                # horizontal_position = horizontal+ margin_width
-                vertical_position = vertical
-            elif self.column * (self.row - 1) <= i % self.img_iter and i % self.img_iter < self.column * self.row:
-                # horizontal_position = horizontal + margin_width * 2
-                vertical_position = vertical + margin_height * 2
-            else:
-                # horizontal_position = horizontal + margin_width
-                vertical_position = vertical + margin_height
-
+            vertical_position = self.apply_vertical_margin(i,self.row,self.column,vertical,margin_height)
             horizontal_position = horizontal + margin_width
 
             with io.BytesIO() as output:
@@ -246,6 +220,29 @@ class AppendSlide:
         self.draw_rectangle(image_slide)
 
         return prs
+    def get_margin(self,length,resized_length,dpi):
+        return Inches(length - resized_length / dpi) / 2
+    def textbox(self,image_slide):
+        cellnumber = str(ceil(self.slide_number / self.slide_counter))
+        central_box = image_slide.shapes.add_textbox(Inches(self.ppt_width / 2 - 0.65),
+                                                     Inches(self.ppt_height / 2 - 0.6), Inches(1), Inches(1))
+        central_label = central_box.text_frame.add_paragraph()
+        central_label.text = "Cell " + cellnumber
+        central_label.font.size = Pt(30)
+        self.slide_number += 1
+        print(self.slide_number)
+
+    def apply_vertical_margin(self,index,row,column,vertical,margin_height):
+        # apply margin
+        iter = row*column
+        if 0 <= index % iter and index % iter < column:
+            vertical_position = vertical
+        elif column * (row - 1) <= index % iter and index % iter < iter:
+            vertical_position = vertical + margin_height * 2
+        else:
+            vertical_position = vertical + margin_height
+        return vertical_position
+
 
     def draw_rectangle(self, image_slide):
         tx_width = 4
