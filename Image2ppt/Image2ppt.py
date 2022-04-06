@@ -191,26 +191,6 @@ class AppendSlide:
                 resized_img.save(output, format="GIF")
                 image_slide.shapes.add_picture(output, horizontal_position, vertical_position)
 
-        # tx_width = 0.1
-        # tx_height = 0.1
-        # tx_top = Inches((self.ppt_height-tx_height)/2)
-        # tx_left= Inches((self.ppt_width-tx_width)/2)
-        # txBox = image_slide.shapes.add_textbox(tx_left,tx_top,Inches(tx_width),Inches(tx_height))
-        # tf = txBox.text_frame
-        #
-        # p = tf.paragraphs[0]
-        # run = p.add_run()
-        # run.text = 'Spam, eggs, and spam'
-        #
-        # font = run.font
-        # font.name = 'Calibri'
-        # font.size = Pt(18)
-        # blueBoxFill = font.fill
-        # blueBoxFill.solid()
-        # blueBoxFillColour = blueBoxFill.fore_color
-        # blueBoxFillColour.rgb = RGBColor(0, 176, 240)
-        # font.bold = True
-        # font.italic = None  # cause value to be inherited from theme
         tx_width = 4
         tx_height = 1
         tx_top = Inches((self.ppt_height-tx_height)/2)
@@ -235,10 +215,6 @@ class AppendSlide:
         ratio_height = pixel_height/img_height
         return min(ratio_width,ratio_height)
         return ratio
-
-
-
-
 
 
 if __name__ == "__main__":
