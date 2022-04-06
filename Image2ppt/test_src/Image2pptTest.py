@@ -1,5 +1,7 @@
 import unittest
-from Image2ppt.src import Image2ppt
+import sys
+sys.path.append('../')
+from src import Image2ppt
 
 
 class MyTestCase(unittest.TestCase):

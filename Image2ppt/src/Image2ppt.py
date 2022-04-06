@@ -132,13 +132,13 @@ class AddTest:
 class AppendSlide:
     # initial value loading
     def __init__(self, input_path):
-        self.img_list = self.get_images(input_path)
-        self.img_count = len(self.img_list)
-
         self.input_path = input_path
-        self.slide_number = 1
 
     def get_parameters(self, parameters):
+        self.img_list = self.get_images(self.input_path)
+        self.img_count = len(self.img_list)
+        self.slide_number = 1
+
         self.column = int(parameters[0])
         self.row =  int(parameters[1])
         self.ppt_width =  float(parameters[3])
@@ -158,6 +158,7 @@ class AppendSlide:
         # Sort list of files based on last modification time in ascending order
         list_of_files = sorted(list_of_files,
                                key=lambda x: os.path.getmtime(os.path.join(dir_name, x))
+                               , reverse=True
                                )
         # Iterate over sorted list of files and print file path
         # along with last modification time of file
