@@ -26,4 +26,7 @@ jobs:
       with:
         python-version: "3.9"
 
+    - name: Run Tests
+      run: python Image2pptTest.py
+
  
