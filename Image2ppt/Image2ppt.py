@@ -191,10 +191,15 @@ class AppendSlide:
                 resized_img.save(output, format="GIF")
                 image_slide.shapes.add_picture(output, horizontal_position, vertical_position)
 
+        self.draw_rectangle(image_slide)
+
+        return prs
+
+    def draw_rectangle(self,image_slide):
         tx_width = 4
         tx_height = 1
-        tx_top = Inches((self.ppt_height-tx_height)/2)
-        tx_left= Inches((self.ppt_width-tx_width)/2)
+        tx_top = Inches((self.ppt_height - tx_height) / 2)
+        tx_left = Inches((self.ppt_width - tx_width) / 2)
         rect0 = image_slide.shapes.add_shape(  # shapeオブジェクト➀を追加
             MSO_SHAPE.ROUNDED_RECTANGLE,  # 図形の種類を[丸角四角形]に指定
             tx_left, tx_top,  # 挿入位置の指定　左上の座標の指定
@@ -206,8 +211,6 @@ class AppendSlide:
         pg = rect0.text_frame.paragraphs[0]  # shapeオブジェクト➀のTextFrameの取得
         pg.text = 'ROUNDED_RECTANGLE'  # TextFrameにテキストを設定
         pg.font.size = Pt(10)  # テキストの文字サイズを10ポイントとする
-
-        return prs
 
     #get ratio for both and use the smaller one to ensure that the image would fit in the slide panel
     def get_resize_ratio(self,img_width,img_height,pixel_width,pixel_height):
