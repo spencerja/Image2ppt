@@ -26,13 +26,8 @@ jobs:
 
     - name: Checkout repo
       uses: actions/checkout@v2
-    - run: |
-        ls
-        cd Image2ppt
-        ls
-        cd src
-        ls
-        cd ../test_scr
+    - name: Check folders
+      run: |
         ls
 
     - name: Install dependencies
@@ -41,7 +36,7 @@ jobs:
         pip install python-pptx
         
     - name: Run Tests    
-      run: python -m unittest Image2ppt/test_src/Image2pptTest.py
+      run: python -m unittest test_src/Image2pptTest.py
     
         
     
