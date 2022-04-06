@@ -1,5 +1,6 @@
 import unittest
-import Image2ppt
+from Image2ppt.src import Image2ppt
+
 
 class MyTestCase(unittest.TestCase):
     def test_get_resize_ratio_horizontal_image_vertical_slide_panel(self):

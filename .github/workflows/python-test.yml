@@ -15,23 +15,29 @@ permissions:
 
 jobs:
   pytest:
-    name: Run tests with pytest
-    runs-on: ubuntu-latest
+    name: Run tests with unittest
+    runs-on: windows-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
         python-version: "3.9"
 
-    - name: Install pytest
-        run: 
-          python -m pip install --upgrade pip
-          pip install pytest
-        # Run the tests. I'm using pytest and the file is in the tests directory.
-      - name: Run tests
-        run: pytest tests/test*
+    - name: Checkout repo
+      uses: actions/checkout@v2
+    - run: |
+        ls
+        cd Image2ppt
+        ls
+        cd src
+        ls
+        cd ../test_scr
+        ls
+    
+        
+    
+
+
 
  
