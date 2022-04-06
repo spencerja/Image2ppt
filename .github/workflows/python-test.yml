@@ -26,14 +26,7 @@ jobs:
 
     - name: Checkout repo
       uses: actions/checkout@v2
-    - run: |
-        ls
-        cd Image2ppt
-        ls
-        cd src
-        ls
-        cd ../test_scr
-        ls
+
 
     - name: Install dependencies
       run: |
