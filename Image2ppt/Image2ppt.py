@@ -43,10 +43,20 @@ class Components:
         button1.grid(row=row, column=column)
         return button1
 
-    def create_frame(self,root):
-        frame = ttk.Frame(root, padding=40)
-        frame.grid()
-        return frame
+    def create_notebook(self, root):
+        notebook = ttk.Notebook(root)
+        notebook.grid()
+        return notebook
+
+    def create_gentab(self, notebook):
+        frame1 = ttk.Frame(notebook)
+        notebook.add(frame1, text="General")
+        return frame1
+
+    def create_advtab(self, notebook):
+        frame2 = ttk.Frame(notebook)
+        notebook.add(frame2, text="Advanced")
+        return frame2
 
 class CreateGUI:
     def __init__(self):
@@ -62,37 +72,39 @@ class CreateGUI:
         root = Tk()
         root.minsize(width=500, height=300)
         root.title("Image2ppt")
-        frame = components.create_frame(root)
+        notebook = components.create_notebook(root)
+        frame1 = components.create_gentab(notebook)
+        frame2 = components.create_advtab(notebook)
 
-        self.input_path_label = components.create_label(frame, self.path_list[0], 0, 0)
+        self.input_path_label = components.create_label(frame1, self.path_list[0], 0, 0)
 
-        input_path_button = components.create_button(frame, "Input path", 0, 1)
+        input_path_button = components.create_button(frame1, "Input path", 0, 1)
         input_path_button.bind("<ButtonPress>", lambda event: self.get_path(event, self.input_path_label))
 
-        self.output_path_label = components.create_label(frame, self.path_list[1], 1, 0)
+        self.output_path_label = components.create_label(frame1, self.path_list[1], 1, 0)
 
-        output_path_button = components.create_button(frame,"Output path", 1, 1)
+        output_path_button = components.create_button(frame1,"Output path", 1, 1)
         output_path_button.bind("<ButtonPress>", lambda event: self.get_path(event, self.output_path_label))
 
-        gui_column_desc = components.create_label(frame, "Column Number:", 2, 0)
-        self.gui_column = components.create_textbox(frame, 4, 2, 1)
+        gui_column_desc = components.create_label(frame1, "Column Number:", 2, 0)
+        self.gui_column = components.create_textbox(frame1, 4, 2, 1)
 
-        gui_row_desc = components.create_label(frame, "Row Number:", 3, 0)
-        self.gui_row = components.create_textbox(frame, 2, 3, 1)
+        gui_row_desc = components.create_label(frame1, "Row Number:", 3, 0)
+        self.gui_row = components.create_textbox(frame1, 2, 3, 1)
 
-        gui_ppt_width_desc = components.create_label(frame, "Slide Width:", 4, 0)
-        self.gui_ppt_width = components.create_textbox(frame, 13.333, 4, 1)
+        gui_ppt_width_desc = components.create_label(frame2, "Slide Width:", 4, 0)
+        self.gui_ppt_width = components.create_textbox(frame2, 13.333, 4, 1)
 
-        gui_ppt_height_desc = components.create_label(frame, "Slide Height:", 5, 0)
-        self.gui_ppt_height = components.create_textbox(frame, 7.5, 5, 1)
+        gui_ppt_height_desc = components.create_label(frame2, "Slide Height:", 5, 0)
+        self.gui_ppt_height = components.create_textbox(frame2, 7.5, 5, 1)
 
-        gui_slide_counter_desc = components.create_label(frame, "Images for each cell:", 6, 0)
-        self.gui_slide_counter = components.create_textbox(frame, 16, 6, 1)
+        gui_slide_counter_desc = components.create_label(frame2, "Images for each cell:", 6, 0)
+        self.gui_slide_counter = components.create_textbox(frame2, 16, 6, 1)
 
-        ppt_name_label = components.create_label (frame, "Save Name:", 7, 0)
-        self.gui_ppt_name_textbox = components.create_textbox(frame, "test", 7, 1)
+        ppt_name_label = components.create_label (frame1, "Save Name:", 7, 0)
+        self.gui_ppt_name_textbox = components.create_textbox(frame1, "test", 7, 1)
 
-        start_process_button = components.create_button(frame, "Start", 8, 1)
+        start_process_button = components.create_button(frame1, "Start", 8, 1)
         start_process_button.bind("<ButtonPress>", lambda event: self.ppt_generation_process(event))
 
         self.start_gui(root)
