@@ -13,14 +13,68 @@ from math import ceil
 import math
 import time
 
-# Utilizes python-pptx: https://python-pptx.readthedocs.io/
 
 
-def main():
+#class Model():
 
-    create_gui = CreateGUI()
-    create_gui.construct_form()
 
+
+class View():
+    def __init__(self, master):
+        self.path_list = [r"C:\Users\Fridge\Documents\PYGit\Image2ppt\Image2ppt\Input",
+                          r"C:\Users\Fridge\Documents\PYGit\Image2ppt\Image2ppt\Output"]
+
+        self.components = Components()
+        self.frame = self.components.create_frame(master)
+        self.input_path_label = self.components.create_label(self.frame, self.path_list[0], 0, 0)
+        self.input_path_button = self.components.create_button(self.frame, "Input path", 0, 1)
+        self.output_path_label = self.components.create_label(self.frame, self.path_list[1], 1, 0)
+        self.output_path_button = self.components.create_button(self.frame, "Output path", 1, 1)
+        self.gui_column_desc = self.components.create_label(self.frame, "Column Number:", 2, 0)
+        self.gui_column = self.components.create_textbox(self.frame, 4, 2, 1)
+        self.gui_row_desc = self.components.create_label(self.frame, "Row Number:", 3, 0)
+        self.gui_row = self.components.create_textbox(self.frame, 2, 3, 1)
+        self.gui_ppt_width_desc = self.components.create_label(self.frame, "Slide Width:", 4, 0)
+        self.gui_ppt_width = self.components.create_textbox(self.frame, 13.333, 4, 1)
+        self.gui_ppt_height_desc = self.components.create_label(self.frame, "Slide Height:", 5, 0)
+        self.gui_ppt_height = self.components.create_textbox(self.frame, 7.5, 5, 1)
+        self.gui_slide_counter_desc = self.components.create_label(self.frame, "Images for each cell:", 6, 0)
+        self.gui_slide_counter = self.components.create_textbox(self.frame, 16, 6, 1)
+        self.ppt_name_label = self.components.create_label(self.frame, "Save Name:", 7, 0)
+        self.gui_ppt_name_textbox = self.components.create_textbox(self.frame, "test", 7, 1)
+        self.start_process_button = self.components.create_button(self.frame, "Start", 8, 1)
+
+class Controller():
+    def __init__(self):
+        self.root = Tk()
+        #self.model = Model()
+        self.view = View(self.root)
+        self.view.input_path_button.bind("<ButtonPress>", lambda event: self.get_path(event, self.view.input_path_label))
+        self.view.output_path_button.bind("<ButtonPress>", lambda event: self.get_path(event, self.view.output_path_label))
+        self.view.start_process_button.bind("<ButtonPress>", lambda event: self.ppt_generation_process(event))
+
+    def run(self):
+        self.root.minsize(width=500, height=300)
+        self.root.title("Image2ppt")
+        self.root.mainloop()
+
+    def get_path(self, event, arg):
+        selected_path = filedialog.askdirectory()
+        if not selected_path=="":
+            arg.configure(text=selected_path)
+
+    def ppt_generation_process(self, event):
+        #tkinter.Tk().withdraw()
+        path_list = [self.view.input_path_label.cget("text"), self.view.input_path_label.cget("text")]
+        input_path = path_list[0]
+        output_path = path_list[1]
+        parameters = [self.view.gui_column.get(), self.view.gui_row.get(), self.view.gui_slide_counter.get(), self.view.gui_ppt_width.get(), self.view.gui_ppt_height.get()]
+
+        append_slide = AppendSlide(input_path)
+        append_slide.get_parameters(parameters)
+        prs = append_slide.append_images_in_ppt()
+        prs.save(output_path + '/' + self.view.gui_ppt_name_textbox.get() + '.pptx')
+        os.startfile(output_path + '/' + self.view.gui_ppt_name_textbox.get() + '.pptx')
 
 class Components:
 
@@ -50,84 +104,6 @@ class Components:
         frame = ttk.Frame(root, padding=40)
         frame.grid()
         return frame
-
-class CreateGUI:
-    def __init__(self):
-
-        self.input_path_label = "initial path"
-        self.output_path_label = "initial path"
-        self.ppt_name_textbox = "test"
-        self.path_list = [r"C:\Users\Fridge\Documents\PYGit\Image2ppt\Image2ppt\Input",
-                          r"C:\Users\Fridge\Documents\PYGit\Image2ppt\Image2ppt\Output"]
-
-    def construct_form(self):
-        components = Components()
-        #root = Tk()
-        root.minsize(width=500, height=300)
-        root.title("Image2ppt")
-        frame = components.create_frame(root)
-
-        self.input_path_label = components.create_label(frame, self.path_list[0], 0, 0)
-
-        input_path_button = components.create_button(frame, "Input path", 0, 1)
-        input_path_button.bind("<ButtonPress>", lambda event: self.get_path(event, self.input_path_label))
-
-        self.output_path_label = components.create_label(frame, self.path_list[1], 1, 0)
-
-        output_path_button = components.create_button(frame,"Output path", 1, 1)
-        output_path_button.bind("<ButtonPress>", lambda event: self.get_path(event, self.output_path_label))
-
-        gui_column_desc = components.create_label(frame, "Column Number:", 2, 0)
-        self.gui_column = components.create_textbox(frame, 4, 2, 1)
-
-        gui_row_desc = components.create_label(frame, "Row Number:", 3, 0)
-        self.gui_row = components.create_textbox(frame, 2, 3, 1)
-
-        gui_ppt_width_desc = components.create_label(frame, "Slide Width:", 4, 0)
-        self.gui_ppt_width = components.create_textbox(frame, 13.333, 4, 1)
-
-        gui_ppt_height_desc = components.create_label(frame, "Slide Height:", 5, 0)
-        self.gui_ppt_height = components.create_textbox(frame, 7.5, 5, 1)
-
-        gui_slide_counter_desc = components.create_label(frame, "Images for each cell:", 6, 0)
-        self.gui_slide_counter = components.create_textbox(frame, 16, 6, 1)
-
-        ppt_name_label = components.create_label (frame, "Save Name:", 7, 0)
-        self.gui_ppt_name_textbox = components.create_textbox(frame, "test", 7, 1)
-
-        start_process_button = components.create_button(frame, "Start", 8, 1)
-        start_process_button.bind("<ButtonPress>", lambda event: self.ppt_generation_process(event))
-
-        self.start_gui(root)
-
-
-    def get_path(self, event, arg):
-        selected_path = filedialog.askdirectory()
-        if not selected_path=="":
-            arg.configure(text=selected_path)
-
-    def ppt_generation_process(self, event):
-        #tkinter.Tk().withdraw()
-        path_list = [self.input_path_label.cget("text"), self.output_path_label.cget("text")]
-        input_path = path_list[0]
-        output_path = path_list[1]
-        parameters = [self.gui_column.get(), self.gui_row.get(), self.gui_slide_counter.get(), self.gui_ppt_width.get(), self.gui_ppt_height.get()]
-
-        append_slide = AppendSlide(input_path)
-        append_slide.get_parameters(parameters)
-        prs = append_slide.append_images_in_ppt()
-        prs.save(output_path + '/' + self.gui_ppt_name_textbox.get() + '.pptx')
-        os.startfile(output_path + '/' + self.gui_ppt_name_textbox.get() + '.pptx')
-
-    def start_gui(self,root):
-        root.mainloop()
-
-
-#this is not used in production
-class AddTest:
-    def add_test(self,a,b):
-        return a+b
-
 
 class AppendSlide:
     # initial value loading
@@ -269,7 +245,6 @@ class AppendSlide:
         return ratio
 
 
-
-if __name__ == "__main__":
-    main()
-
+if __name__ == '__main__':
+    c = Controller()
+    c.run()
