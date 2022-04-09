@@ -21,6 +21,8 @@ class Model():
         ratio_height = pixel_height / img_height
         return min(ratio_width, ratio_height)
 
+    def get_margin(self, length, resized_length, dpi):
+        return Inches(length - resized_length / dpi) / 2
 
 
 class View():
@@ -149,8 +151,8 @@ class Controller():
             ratio = self.model.get_resize_ratio(current_img.width, current_img.height, pixel_width, pixel_height)
             resized_img = current_img.resize((int(current_img.width * ratio), int(current_img.height * ratio)))
 
-            margin_width = self.get_margin(width, resized_img.width, dpi)
-            margin_height = self.get_margin(height, resized_img.height, dpi)
+            margin_width = self.model.get_margin(width, resized_img.width, dpi)
+            margin_height = self.model.get_margin(height, resized_img.height, dpi)
             # in inches
             horizontal = Inches((i % self.column) * (self.ppt_width / self.column))
             vertical = Inches((i % self.img_iter // self.column) * self.ppt_height / self.row)
@@ -166,8 +168,7 @@ class Controller():
 
         return prs
 
-    def get_margin(self, length, resized_length, dpi):
-        return Inches(length - resized_length / dpi) / 2
+
 
     def textbox(self, image_slide):
         cellnumber = str(ceil(self.slide_number / self.slide_counter))
