@@ -57,6 +57,15 @@ class Components:
         frame2 = ttk.Frame(notebook)
         notebook.add(frame2, text="Advanced")
         return frame2
+    # we can merge tab creation into one by adding text input
+    # if we put "self" in front of a variable then, the variable becomes global within the class
+    #but if the variable does not have self then it becomes a local variable
+    # in this case, we only need to have the variable "frame" within the function, so we dont need to put self
+
+    def create_tab(self,notebook,text):
+        frame = ttk.Frame(notebook)
+        notebook.add(frame, text=text)
+        return frame
 
 class CreateGUI:
     def __init__(self):
@@ -73,38 +82,43 @@ class CreateGUI:
         root.minsize(width=500, height=300)
         root.title("Image2ppt")
         notebook = components.create_notebook(root)
-        frame1 = components.create_gentab(notebook)
-        frame2 = components.create_advtab(notebook)
 
-        self.input_path_label = components.create_label(frame1, self.path_list[0], 0, 0)
+        #general and advanced tabs come from the same function
+        # also renamed frame1 and frame2
+        #if you right click on a variable and go to the refactor then you can rename variable at once.
+        frame_general = components.create_tab(notebook,"General")
 
-        input_path_button = components.create_button(frame1, "Input path", 0, 1)
+        self.input_path_label = components.create_label(frame_general, self.path_list[0], 0, 0)
+
+        input_path_button = components.create_button(frame_general, "Input path", 0, 1)
         input_path_button.bind("<ButtonPress>", lambda event: self.get_path(event, self.input_path_label))
 
-        self.output_path_label = components.create_label(frame1, self.path_list[1], 1, 0)
+        self.output_path_label = components.create_label(frame_general, self.path_list[1], 1, 0)
 
-        output_path_button = components.create_button(frame1,"Output path", 1, 1)
+        output_path_button = components.create_button(frame_general,"Output path", 1, 1)
         output_path_button.bind("<ButtonPress>", lambda event: self.get_path(event, self.output_path_label))
 
-        gui_column_desc = components.create_label(frame1, "Column Number:", 2, 0)
-        self.gui_column = components.create_textbox(frame1, 4, 2, 1)
+        gui_column_desc = components.create_label(frame_general, "Column Number:", 2, 0)
+        self.gui_column = components.create_textbox(frame_general, 4, 2, 1)
 
-        gui_row_desc = components.create_label(frame1, "Row Number:", 3, 0)
-        self.gui_row = components.create_textbox(frame1, 2, 3, 1)
+        gui_row_desc = components.create_label(frame_general, "Row Number:", 3, 0)
+        self.gui_row = components.create_textbox(frame_general, 2, 3, 1)
 
-        gui_ppt_width_desc = components.create_label(frame2, "Slide Width:", 4, 0)
-        self.gui_ppt_width = components.create_textbox(frame2, 13.333, 4, 1)
+        frame_advanced = components.create_tab(notebook, "Advanced")
 
-        gui_ppt_height_desc = components.create_label(frame2, "Slide Height:", 5, 0)
-        self.gui_ppt_height = components.create_textbox(frame2, 7.5, 5, 1)
+        gui_ppt_width_desc = components.create_label(frame_advanced, "Slide Width:", 4, 0)
+        self.gui_ppt_width = components.create_textbox(frame_advanced, 13.333, 4, 1)
 
-        gui_slide_counter_desc = components.create_label(frame2, "Images for each cell:", 6, 0)
-        self.gui_slide_counter = components.create_textbox(frame2, 16, 6, 1)
+        gui_ppt_height_desc = components.create_label(frame_advanced, "Slide Height:", 5, 0)
+        self.gui_ppt_height = components.create_textbox(frame_advanced, 7.5, 5, 1)
 
-        ppt_name_label = components.create_label (frame1, "Save Name:", 7, 0)
-        self.gui_ppt_name_textbox = components.create_textbox(frame1, "test", 7, 1)
+        gui_slide_counter_desc = components.create_label(frame_advanced, "Images for each cell:", 6, 0)
+        self.gui_slide_counter = components.create_textbox(frame_advanced, 16, 6, 1)
 
-        start_process_button = components.create_button(frame1, "Start", 8, 1)
+        ppt_name_label = components.create_label (frame_general, "Save Name:", 7, 0)
+        self.gui_ppt_name_textbox = components.create_textbox(frame_general, "test", 7, 1)
+
+        start_process_button = components.create_button(frame_general, "Start", 8, 1)
         start_process_button.bind("<ButtonPress>", lambda event: self.ppt_generation_process(event))
 
         self.start_gui(root)
