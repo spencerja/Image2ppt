@@ -14,8 +14,12 @@ import math
 import time
 
 
-
-#class Model():
+class Model():
+    # get ratio for both and use the smaller one to ensure that the image would fit in the slide panel
+    def get_resize_ratio(self, img_width, img_height, pixel_width, pixel_height):
+        ratio_width = pixel_width / img_width
+        ratio_height = pixel_height / img_height
+        return min(ratio_width, ratio_height)
 
 
 
@@ -47,7 +51,7 @@ class View():
 class Controller():
     def __init__(self):
         self.root = Tk()
-        #self.model = Model()
+        self.model = Model()
         self.view = View(self.root)
         self.view.input_path_button.bind("<ButtonPress>", lambda event: self.get_path(event, self.view.input_path_label))
         self.view.output_path_button.bind("<ButtonPress>", lambda event: self.get_path(event, self.view.output_path_label))
@@ -66,49 +70,14 @@ class Controller():
     def ppt_generation_process(self, event):
         #tkinter.Tk().withdraw()
         path_list = [self.view.input_path_label.cget("text"), self.view.input_path_label.cget("text")]
-        input_path = path_list[0]
-        output_path = path_list[1]
+        self.input_path = path_list[0]
+        self.output_path = path_list[1]
         parameters = [self.view.gui_column.get(), self.view.gui_row.get(), self.view.gui_slide_counter.get(), self.view.gui_ppt_width.get(), self.view.gui_ppt_height.get()]
 
-        append_slide = AppendSlide(input_path)
-        append_slide.get_parameters(parameters)
-        prs = append_slide.append_images_in_ppt()
-        prs.save(output_path + '/' + self.view.gui_ppt_name_textbox.get() + '.pptx')
-        os.startfile(output_path + '/' + self.view.gui_ppt_name_textbox.get() + '.pptx')
-
-class Components:
-
-    def create_textbox(self,frame,text,row,column):
-        txt = ttk.Entry(frame,width=40)
-        txt.insert(tkinter.END,text)
-        txt.grid(row=row,column=column)
-        return txt
-
-    def create_label(self,frame,text,row,column):
-        label1 = ttk.Label(
-            frame,
-            text=text,
-            padding=(5, 10))
-        label1.grid(row=row, column=column)
-        return label1
-
-    def create_button(self,frame, text, row, column):
-        button1 = ttk.Button(
-            frame,
-            text=text,
-            )
-        button1.grid(row=row, column=column)
-        return button1
-
-    def create_frame(self,root):
-        frame = ttk.Frame(root, padding=40)
-        frame.grid()
-        return frame
-
-class AppendSlide:
-    # initial value loading
-    def __init__(self, input_path):
-        self.input_path = input_path
+        self.get_parameters(parameters)
+        prs = self.append_images_in_ppt()
+        prs.save(self.output_path + '/' + self.view.gui_ppt_name_textbox.get() + '.pptx')
+        os.startfile(self.output_path + '/' + self.view.gui_ppt_name_textbox.get() + '.pptx')
 
     def get_parameters(self, parameters):
         self.img_list = self.get_images(self.input_path)
@@ -116,8 +85,8 @@ class AppendSlide:
         self.slide_number = 1
 
         self.column = int(parameters[0])
-        self.row =  int(parameters[1])
-        self.ppt_width =  float(parameters[3])
+        self.row = int(parameters[1])
+        self.ppt_width = float(parameters[3])
         self.ppt_height = float(parameters[4])
         self.img_width = self.ppt_width / self.column
         self.img_height = self.ppt_height / self.row
@@ -125,7 +94,7 @@ class AppendSlide:
         self.slide_counter = int(parameters[2]) / self.img_iter
 
     def get_images(self, input_path):
-        #folder_files = os.listdir(input_path)
+        # folder_files = os.listdir(input_path)
         img_list = []
         dir_name = input_path
         # Get list of all files only in the given directory
@@ -143,7 +112,7 @@ class AppendSlide:
             file = file_name
             print(file)
             if file.endswith('.png') or file.endswith(".tif") or file.endswith(".jpg") or file.endswith(".jpeg"):
-                 img_list.append(file)
+                img_list.append(file)
 
         print(img_list)
         return img_list
@@ -177,16 +146,16 @@ class AppendSlide:
 
             current_img = Image.open(self.input_path + '/' + self.img_list[i])
             # working in pixels
-            ratio = self.get_resize_ratio(current_img.width, current_img.height, pixel_width, pixel_height)
+            ratio = self.model.get_resize_ratio(current_img.width, current_img.height, pixel_width, pixel_height)
             resized_img = current_img.resize((int(current_img.width * ratio), int(current_img.height * ratio)))
 
-            margin_width = self.get_margin(width,resized_img.width,dpi)
-            margin_height = self.get_margin(height,resized_img.height,dpi)
+            margin_width = self.get_margin(width, resized_img.width, dpi)
+            margin_height = self.get_margin(height, resized_img.height, dpi)
             # in inches
             horizontal = Inches((i % self.column) * (self.ppt_width / self.column))
             vertical = Inches((i % self.img_iter // self.column) * self.ppt_height / self.row)
 
-            vertical_position = self.apply_vertical_margin(i,self.row,self.column,vertical,margin_height)
+            vertical_position = self.apply_vertical_margin(i, self.row, self.column, vertical, margin_height)
             horizontal_position = horizontal + margin_width
 
             with io.BytesIO() as output:
@@ -196,9 +165,11 @@ class AppendSlide:
         self.draw_rectangle(image_slide)
 
         return prs
-    def get_margin(self,length,resized_length,dpi):
+
+    def get_margin(self, length, resized_length, dpi):
         return Inches(length - resized_length / dpi) / 2
-    def textbox(self,image_slide):
+
+    def textbox(self, image_slide):
         cellnumber = str(ceil(self.slide_number / self.slide_counter))
         central_box = image_slide.shapes.add_textbox(Inches(self.ppt_width / 2 - 0.65),
                                                      Inches(self.ppt_height / 2 - 0.6), Inches(1), Inches(1))
@@ -208,9 +179,9 @@ class AppendSlide:
         self.slide_number += 1
         print(self.slide_number)
 
-    def apply_vertical_margin(self,index,row,column,vertical,margin_height):
+    def apply_vertical_margin(self, index, row, column, vertical, margin_height):
         # apply margin
-        iter = row*column
+        iter = row * column
         if 0 <= index % iter and index % iter < column:
             vertical_position = vertical
         elif column * (row - 1) <= index % iter and index % iter < iter:
@@ -218,7 +189,6 @@ class AppendSlide:
         else:
             vertical_position = vertical + margin_height
         return vertical_position
-
 
     def draw_rectangle(self, image_slide):
         tx_width = 4
@@ -237,13 +207,34 @@ class AppendSlide:
         pg.text = 'ROUNDED_RECTANGLE'  # TextFrameにテキストを設定
         pg.font.size = Pt(10)  # テキストの文字サイズを10ポイントとする
 
-    # get ratio for both and use the smaller one to ensure that the image would fit in the slide panel
-    def get_resize_ratio(self, img_width, img_height, pixel_width, pixel_height):
-        ratio_width = pixel_width / img_width
-        ratio_height = pixel_height / img_height
-        return min(ratio_width, ratio_height)
-        return ratio
+class Components:
 
+    def create_textbox(self,frame,text,row,column):
+        txt = ttk.Entry(frame,width=40)
+        txt.insert(tkinter.END,text)
+        txt.grid(row=row,column=column)
+        return txt
+
+    def create_label(self,frame,text,row,column):
+        label1 = ttk.Label(
+            frame,
+            text=text,
+            padding=(5, 10))
+        label1.grid(row=row, column=column)
+        return label1
+
+    def create_button(self,frame, text, row, column):
+        button1 = ttk.Button(
+            frame,
+            text=text,
+            )
+        button1.grid(row=row, column=column)
+        return button1
+
+    def create_frame(self,root):
+        frame = ttk.Frame(root, padding=40)
+        frame.grid()
+        return frame
 
 if __name__ == '__main__':
     c = Controller()
