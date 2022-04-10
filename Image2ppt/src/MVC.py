@@ -33,7 +33,13 @@ class View():
         self.components = Components()
         self.frame = self.components.create_frame(root)
         self.notebook = self.components.create_notebook(root)
-        self.general_frame = self.components.create_tab(self.notebook,"General")
+        self.prepare_general_tab()
+        self.prepare_advanced_tab()
+
+
+
+    def prepare_general_tab(self):
+        self.general_frame = self.components.create_tab(self.notebook, "General")
         self.input_path_label = self.components.create_label(self.general_frame, self.path_list[0], 0, 0)
         self.input_path_button = self.components.create_button(self.general_frame, "Input path", 0, 1)
         self.output_path_label = self.components.create_label(self.general_frame, self.path_list[1], 1, 0)
@@ -46,6 +52,7 @@ class View():
         self.gui_ppt_name_textbox = self.components.create_textbox(self.general_frame, "test", 7, 1)
         self.start_process_button = self.components.create_button(self.general_frame, "Start", 8, 1)
 
+    def prepare_advanced_tab(self):
         self.advanced_frame = self.components.create_tab(self.notebook, "Advanced")
         self.gui_ppt_width_desc = self.components.create_label(self.advanced_frame, "Slide Width (inches):", 4, 0)
         self.gui_ppt_width = self.components.create_textbox(self.advanced_frame, 13.333, 4, 1)
@@ -53,7 +60,6 @@ class View():
         self.gui_ppt_height = self.components.create_textbox(self.advanced_frame, 7.5, 5, 1)
         self.gui_slide_counter_desc = self.components.create_label(self.advanced_frame, "Images for each cell:", 6, 0)
         self.gui_slide_counter = self.components.create_textbox(self.advanced_frame, 16, 6, 1)
-
 
 class Controller():
     def __init__(self):
