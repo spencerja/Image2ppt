@@ -139,13 +139,10 @@ class Controller():
             resized_img = current_img.resize((int(current_img.width * ratio), int(current_img.height * ratio)))
 
             #prepare margin for resized image
-            #margin_width = self.model.get_margin(width, resized_img.width, dpi)
             margin_width = self.model.get_margin_in_pixel(pixel_width,resized_img.width)
-            #margin_height = self.model.get_margin(height, resized_img.height, dpi)
             margin_height = self.model.get_margin_in_pixel(pixel_height, resized_img.height)
             #prepare panel location
-            #horizontal = Inches((i % self.column) * (self.ppt_width / self.column))
-            #vertical = Inches((i % self.img_iter // self.column) * self.ppt_height / self.row)
+
             horizontal = (i % self.column) * (ppt_width_in_pixel / self.column)
             vertical = (i % self.img_iter // self.column) *ppt_height_in_pixel / self.row
             #prepare image location based on panel location
@@ -161,63 +158,6 @@ class Controller():
         self.ppt_component.draw_rectangle(image_slide,self.ppt_width,self.ppt_height)
 
         return prs
-
-    def append_images_in_pixel(self, prs):
-
-        self.img_list = self.get_images(self.input_path)
-        self.img_count = len(self.img_list)
-        dpi = 72
-        print(Inches(self.ppt_width),Inches(self.ppt_height))
-        print(Inches(self.ppt_width)/914400, Inches(self.ppt_height)/914400)
-        emus_per_px = int(914400 / dpi)
-        blank_slide = prs.slide_layouts[6]
-        # panel size in terms of pixel
-        pixel_width = int(self.ppt_width*dpi / self.column)
-        pixel_height = int(self.ppt_height*dpi  / self.row)
-        # panel width and height in inches
-        #width = self.ppt_width / self.column
-        #height = self.ppt_height / self.row
-
-        for i in range(self.img_count):
-            #prepare blank slide
-            if i % self.img_iter == 0:
-                image_slide = prs.slides.add_slide(blank_slide)
-                cellnumber = str(ceil(self.slide_number / self.slide_counter))
-                self.ppt_component.textbox(image_slide,cellnumber,self.ppt_width,self.ppt_height)
-                self.slide_number += 1
-                print(self.slide_number)
-
-            #prepare image
-            current_img = Image.open(self.input_path + '/' + self.img_list[i])
-
-            #resize image
-            ratio = self.model.get_resize_ratio(current_img.width, current_img.height, pixel_width, pixel_height)
-            resized_img = current_img.resize((int(current_img.width * ratio), int(current_img.height * ratio)))
-            print(resized_img.size)
-            #prepare margin for resized image
-            margin_width = self.model.get_margin_in_pixel(pixel_width, resized_img.width)
-            margin_height = self.model.get_margin_in_pixel(pixel_height, resized_img.height)
-
-            #prepare panel location
-            horizontal = (i % self.column) * (pixel_width / self.column)
-            vertical = (i % self.img_iter // self.column) * pixel_height / self.row
-
-            #prepare image location based on panel location
-            vertical_position = self.apply_vertical_margin(i, self.row, self.column, vertical, margin_height)
-            horizontal_position = horizontal + margin_width
-
-            #add image to a panel
-            with io.BytesIO() as output:
-                resized_img.save(output, format="GIF")
-                image_slide.shapes.add_picture(output, horizontal_position*emus_per_px, vertical_position*emus_per_px)
-
-
-        self.ppt_component.draw_rectangle(image_slide,self.ppt_width,self.ppt_height)
-
-        return prs
-
-
-
 
     def apply_vertical_margin(self, index, row, column, vertical, margin_height):
         # apply margin
