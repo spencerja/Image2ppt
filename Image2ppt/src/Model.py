@@ -22,3 +22,11 @@ class Model():
 
     def get_margin(self, length, resized_length, dpi):
         return Inches(length - resized_length / dpi) / 2
+
+    def get_margin_in_pixel(self,length,resized_length):
+        return (length-resized_length)/2
+
+    def check_image_extension(self,lst,file):
+        if file.endswith('.png') or file.endswith(".tif") or file.endswith(".jpg") or file.endswith(".jpeg"):
+            lst.append(file)
+            return lst
