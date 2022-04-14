@@ -10,7 +10,7 @@ from pptx.dml.color import RGBColor
 from PIL import Image
 from math import ceil
 import sys
-
+import json
 import math
 import time
 import Model
@@ -19,11 +19,30 @@ import io
 
 class Controller():
     def __init__(self):
+
+
         self.root = Tk()
         self.model = Model.Model()
         self.view = View.View(self.root)
+        self.config = ConfigObject()
+        if os.path.isfile("config.json"):
+            with open('config.json', 'r') as f:
+                data = json.load(f)
+            print(data)
+            print(type(data))
+            self.config = LoadingConfig(data)
+
+        self.view.input_path_label.configure(text=self.config.input_path)
+        self.view.output_path_label.configure(text=self.config.output_path)
+
         self.bindings()
         self.ppt_component = SlideComponents()
+
+        #self.config.input_path = self.view.input_path_label.cget("text")
+        #self.config.output_path = self.view.output_path_label.cget("text")
+
+
+
 
     def bindings(self):
         self.view.input_path_button.bind("<ButtonPress>",
@@ -31,8 +50,16 @@ class Controller():
         self.view.output_path_button.bind("<ButtonPress>",
                                           lambda event: self.get_path(event, self.view.output_path_label))
         self.view.start_process_button.bind("<ButtonPress>", lambda event: self.ppt_generation_process(event))
+        self.view.save_config_button.bind("<ButtonPress>",
+                                          lambda event: self.save_config_into_file(event, self.config))
 
-
+    def save_config_into_file(self,event,arg):
+        #s = json.dumps(arg, default=lambda x: x.__dict__)
+        arg.input_path = self.view.input_path_label.cget("text")
+        arg.output_path = self.view.output_path_label.cget("text")
+        with open('config.json', 'w', encoding='utf-8') as f:
+            json.dump(arg, f,default=lambda x: x.__dict__, ensure_ascii=False, indent=4)
+        #print(s)
 
     def get_path(self, event, arg):
         selected_path = filedialog.askdirectory()
@@ -178,7 +205,14 @@ class Controller():
             vertical_position = vertical + margin_height
         return vertical_position
 
+class LoadingConfig(object):
+    def __init__(self, dict):
+        vars(self).update(dict)
 
+class ConfigObject:
+    def __init__(self):
+        self.input_path = None
+        self.output_path = None
 
 class SlideComponents:
     def textbox(self, image_slide,cellnumber,ppt_width,ppt_height):

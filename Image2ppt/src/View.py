@@ -16,9 +16,9 @@ import time
 
 class View():
     def __init__(self, root):
-        self.path_list = [r"C:\Users\Fridge\Documents\PYGit\Image2ppt\Image2ppt\Input",
-                          r"C:\Users\Fridge\Documents\PYGit\Image2ppt\Image2ppt\Output"]
-
+        #self.path_list = [r"C:\Users\Fridge\Documents\PYGit\Image2ppt\Image2ppt\Input",
+       #                   r"C:\Users\Fridge\Documents\PYGit\Image2ppt\Image2ppt\Output"]
+        self.path_list = ["Please choose an input folder","Please choose an output folder"]
         self.components = Components()
         self.frame = self.components.create_frame(root)
         self.notebook = self.components.create_notebook(root)
@@ -39,6 +39,7 @@ class View():
         self.gui_ppt_name_textbox = self.components.create_textbox(self.general_frame, "test", 7, 1)
         self.combobox = self.components.create_combobox(self.general_frame,['Ascending','Descending'],8,0)
         self.start_process_button = self.components.create_button(self.general_frame, "Start", 8, 1)
+        self.save_config_button  = self.components.create_button(self.general_frame,"Save Config",8,2)
 
     def prepare_advanced_tab(self):
         self.advanced_frame = self.components.create_tab(self.notebook, "Advanced")
