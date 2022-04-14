@@ -7,13 +7,15 @@ from tkinter import *
 from tkinter import ttk
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.dml.color import RGBColor
-import io
 from PIL import Image
 from math import ceil
+import sys
+
 import math
 import time
 import Model
 import View
+import io
 
 class Controller():
     def __init__(self):
@@ -31,6 +33,7 @@ class Controller():
         self.view.start_process_button.bind("<ButtonPress>", lambda event: self.ppt_generation_process(event))
 
 
+
     def get_path(self, event, arg):
         selected_path = filedialog.askdirectory()
         if not selected_path=="":
@@ -40,7 +43,8 @@ class Controller():
         #tkinter.Tk().withdraw()
         self.input_path = self.view.input_path_label.cget("text")
         self.output_path = self.view.input_path_label.cget("text")
-        parameters = [self.view.gui_column.get(), self.view.gui_row.get(), self.view.gui_slide_counter.get(), self.view.gui_ppt_width.get(), self.view.gui_ppt_height.get()]
+        parameters = [self.view.gui_column.get(), self.view.gui_row.get(), self.view.gui_slide_counter.get(),
+                      self.view.gui_ppt_width.get(), self.view.gui_ppt_height.get(),self.view.combobox.get()]
 
         self.get_parameters(parameters)
         prs = self.append_images_in_ppt()
@@ -56,6 +60,7 @@ class Controller():
 
 
     def get_parameters(self, parameters):
+        self.combobox_value = parameters[5]
         self.img_list = self.get_images(self.input_path)
         self.img_count = len(self.img_list)
         self.slide_number = 1
@@ -68,6 +73,9 @@ class Controller():
         self.img_height = self.ppt_height / self.row
         self.img_iter = self.column * self.row
         self.slide_counter = int(parameters[2]) / self.img_iter
+
+        print(parameters)
+        print(self.combobox_value)
 
 
     def sort_images(self,list_of_files,dir_name):
@@ -86,11 +94,10 @@ class Controller():
         # folder_files = os.listdir(input_path)
         img_list = []
         list_of_files = self.get_list_of_files(input_path)
-        list_of_files= self.sort_images(list_of_files,input_path)
+        if self.combobox_value == "Ascending":
+            list_of_files= self.sort_images(list_of_files,input_path)
 
         for file_name in list_of_files:
-            #file = os.path.join(dir_name, file_name)
-            #file = file_name
             self.model.check_image_extension(img_list,file_name)
 
         return img_list
@@ -102,7 +109,6 @@ class Controller():
         prs = Presentation()
         prs.slide_width = Inches(self.ppt_width)
         prs.slide_height = Inches(self.ppt_height)
-        #prs = self.append_images_in_pixel(prs)
         prs = self.append_images(prs)
         return prs
 
@@ -119,8 +125,8 @@ class Controller():
         pixel_width = int(ppt_width_in_pixel / self.column)
         pixel_height = int(ppt_height_in_pixel / self.row)
         # panel width and height in inches
-        width = self.ppt_width / self.column
-        height = self.ppt_height / self.row
+        #width = self.ppt_width / self.column
+        #height = self.ppt_height / self.row
 
         for i in range(self.img_count):
             #prepare blank slide
@@ -151,7 +157,9 @@ class Controller():
             print(horizontal_position,vertical_position)
             #add image to a panel
             with io.BytesIO() as output:
-                resized_img.save(output, format="GIF")
+                #resized_img.save(output, format="GIF")
+                quality_val = 100
+                resized_img.save(output,format = "GIF",quality=quality_val)
                 image_slide.shapes.add_picture(output, horizontal_position*emus_per_px, vertical_position*emus_per_px)
 
 
@@ -173,7 +181,6 @@ class Controller():
 
 
 class SlideComponents:
-
     def textbox(self, image_slide,cellnumber,ppt_width,ppt_height):
 
         central_box = image_slide.shapes.add_textbox(Inches(ppt_width / 2 - 0.65),
@@ -200,7 +207,8 @@ class SlideComponents:
         pg.text = 'ROUNDED_RECTANGLE'  # TextFrameにテキストを設定
         pg.font.size = Pt(10)  # テキストの文字サイズを10ポイントとする
 
-
+"""Start part
+"""
 if __name__ == '__main__':
     c = Controller()
     c.run()

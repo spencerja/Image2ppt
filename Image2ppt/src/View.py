@@ -25,8 +25,6 @@ class View():
         self.prepare_general_tab()
         self.prepare_advanced_tab()
 
-
-
     def prepare_general_tab(self):
         self.general_frame = self.components.create_tab(self.notebook, "General")
         self.input_path_label = self.components.create_label(self.general_frame, self.path_list[0], 0, 0)
@@ -39,22 +37,29 @@ class View():
         self.gui_row = self.components.create_textbox(self.general_frame, 2, 3, 1)
         self.ppt_name_label = self.components.create_label(self.general_frame, "Save Name:", 7, 0)
         self.gui_ppt_name_textbox = self.components.create_textbox(self.general_frame, "test", 7, 1)
+        self.combobox = self.components.create_combobox(self.general_frame,['Ascending','Descending'],8,0)
         self.start_process_button = self.components.create_button(self.general_frame, "Start", 8, 1)
 
     def prepare_advanced_tab(self):
         self.advanced_frame = self.components.create_tab(self.notebook, "Advanced")
         self.gui_ppt_width_desc = self.components.create_label(self.advanced_frame, "Slide Width (inches):", 4, 0)
-        self.gui_ppt_width = self.components.create_textbox(self.advanced_frame, 13.333, 4, 1)
+        self.gui_ppt_width = self.components.create_textbox(self.advanced_frame, 26.6666, 4, 1)
         self.gui_ppt_height_desc = self.components.create_label(self.advanced_frame, "Slide Height (inches):", 5, 0)
-        self.gui_ppt_height = self.components.create_textbox(self.advanced_frame, 7.5, 5, 1)
+        self.gui_ppt_height = self.components.create_textbox(self.advanced_frame, 15, 5, 1)
         self.gui_slide_counter_desc = self.components.create_label(self.advanced_frame, "Images for each cell:", 6, 0)
         self.gui_slide_counter = self.components.create_textbox(self.advanced_frame, 16, 6, 1)
 
 
 class Components:
 
+    def create_combobox(self,frame,list,row,column):
+        combobox = ttk.Combobox(frame,values = list)
+        combobox.set(list[0])
+        combobox.grid(row =row,column=column)
+        return combobox
+
     def create_textbox(self,frame,text,row,column):
-        txt = ttk.Entry(frame,width=40)
+        txt = ttk.Entry(frame,width=20)
         txt.insert(tkinter.END,text)
         txt.grid(row=row,column=column)
         return txt
