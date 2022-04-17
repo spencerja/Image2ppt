@@ -32,7 +32,7 @@ jobs:
         ls
         cd src
         ls
-        cd ../test_sr
+        cd ../test_src
         ls
 
     - name: Install dependencies
