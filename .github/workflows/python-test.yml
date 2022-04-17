@@ -42,7 +42,9 @@ jobs:
         
     - name: Run Tests    
       working-directory: ./Image2ppt
-      run: python -m unittest discover test_src
+      run: |
+        ls
+        python -m unittest test_src
     
         
     
