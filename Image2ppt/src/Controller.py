@@ -23,6 +23,7 @@ class Controller():
         self.model = Model.Model()
         self.view = View.View(self.root)
         self.config = ConfigObject()
+
         if os.path.isfile("config.json"):
             with open('config.json', 'r') as f:
                 data = json.load(f)
@@ -38,8 +39,6 @@ class Controller():
 
         #self.config.input_path = self.view.input_path_label.cget("text")
         #self.config.output_path = self.view.output_path_label.cget("text")
-
-
 
 
     def bindings(self):
@@ -99,8 +98,22 @@ class Controller():
         self.img_iter = self.column * self.row
         self.slide_counter = int(parameters[2]) / self.img_iter
 
-        print(parameters)
-        print(self.combobox_value)
+        # get ppt width in pixels
+        self.dpi = 72
+        self.ppt_width_in_pixel = self.ppt_width * self.dpi
+        self.ppt_height_in_pixel = self.ppt_height * self.dpi
+
+        self.emus_per_px = int(914400 / self.dpi)
+        # panel size in terms of pixel
+        self.pixel_width = int(self.ppt_width_in_pixel / self.column)
+        self.pixel_height = int(self.ppt_height_in_pixel / self.row)
+
+        self.img_list = self.get_images(self.input_path)
+        self.img_count = len(self.img_list)
+
+        # panel width and height in inches
+        # width = self.ppt_width / self.column
+        # height = self.ppt_height / self.row
 
 
     def sort_images(self,list_of_files,dir_name):
@@ -138,79 +151,45 @@ class Controller():
         return prs
 
     def append_images(self, prs):
-
-        self.img_list = self.get_images(self.input_path)
-        self.img_count = len(self.img_list)
-
-
         blank_slide = prs.slide_layouts[6]
-
-        #get ppt width in pixels
-        dpi = 72
-        ppt_width_in_pixel = self.ppt_width*dpi
-        ppt_height_in_pixel = self.ppt_height*dpi
-
-        emus_per_px = int(914400 / dpi)
-        # panel size in terms of pixel
-        pixel_width = int(ppt_width_in_pixel / self.column)
-        pixel_height = int(ppt_height_in_pixel / self.row)
-
-        # panel width and height in inches
-        #width = self.ppt_width / self.column
-        #height = self.ppt_height / self.row
-
         #start adding images on the slide
         for i in range(self.img_count):
             #prepare blank slide if the image reaches threshold
             if i % self.img_iter == 0:
                 image_slide = prs.slides.add_slide(blank_slide)
-                #cellnumber = str(ceil(self.slide_number / self.slide_counter))
-                cellnumber = str(ceil(len(prs.slides)/self.slide_counter))
-                self.ppt_component.textbox(image_slide,cellnumber,self.ppt_width,self.ppt_height)
-                #self.slide_number += 1
-                #print(self.slide_number)
+                cell_number = str(ceil(len(prs.slides)/self.slide_counter))
+                self.ppt_component.textbox(image_slide,cell_number,self.ppt_width,self.ppt_height)
                 print(len(prs.slides))
 
             #prepare image
             current_img = Image.open(self.input_path + '/' + self.img_list[i])
 
             #resize image
-            ratio = self.model.get_resize_ratio(current_img.width, current_img.height, pixel_width, pixel_height)
+            ratio = self.model.get_resize_ratio(current_img.width, current_img.height, self.pixel_width, self.pixel_height)
             resized_img = current_img.resize((int(current_img.width * ratio), int(current_img.height * ratio)))
 
-            #prepare margin for resized image
-            margin_width = self.model.get_margin_in_pixel(pixel_width,resized_img.width)
-            margin_height = self.model.get_margin_in_pixel(pixel_height, resized_img.height)
+            margin_width = self.model.get_margin_in_pixel(self.pixel_width, resized_img.width)
+            margin_height = self.model.get_margin_in_pixel(self.pixel_height, resized_img.height)
 
             #prepare panel location
-            horizontal = (i % self.column) * (ppt_width_in_pixel / self.column)
-            vertical = (i % self.img_iter // self.column) *ppt_height_in_pixel / self.row
+            prefixed_horizontal_location = (i % self.column) * (self.ppt_width_in_pixel / self.column)
+            prefixed_vertical_location = (i % self.img_iter // self.column) *self.ppt_height_in_pixel / self.row
 
             #prepare image location based on panel location
-            vertical_position = self.apply_vertical_margin(i, self.row, self.column, vertical, margin_height)
-            horizontal_position = horizontal + margin_width
+            fixed_vertical_position = self.model.apply_vertical_margin(i, self.row, self.column, prefixed_vertical_location, margin_height)
+            fixed_horizontal_position = prefixed_horizontal_location + margin_width
 
             #add image to a panel
             with io.BytesIO() as output:
                 #resized_img.save(output, format="GIF")
                 quality_val = 100
                 resized_img.save(output,format = "GIF",quality=quality_val)
-                image_slide.shapes.add_picture(output, horizontal_position*emus_per_px, vertical_position*emus_per_px)
+                image_slide.shapes.add_picture(output, fixed_horizontal_position*self.emus_per_px, fixed_vertical_position*self.emus_per_px)
 
         self.ppt_component.draw_rectangle(image_slide,self.ppt_width,self.ppt_height)
 
         return prs
 
-    def apply_vertical_margin(self, index, row, column, vertical, margin_height):
-        # apply margin
-        iter = row * column
-        if 0 <= index % iter and index % iter < column:
-            vertical_position = vertical
-        elif column * (row - 1) <= index % iter and index % iter < iter:
-            vertical_position = vertical + margin_height * 2
-        else:
-            vertical_position = vertical + margin_height
-        return vertical_position
 
 class LoadingConfig(object):
     def __init__(self, dict):
@@ -222,12 +201,12 @@ class ConfigObject:
         self.output_path = None
 
 class SlideComponents:
-    def textbox(self, image_slide,cellnumber,ppt_width,ppt_height):
+    def textbox(self, image_slide,cell_number,ppt_width,ppt_height):
 
         central_box = image_slide.shapes.add_textbox(Inches(ppt_width / 2 - 0.65),
                                                      Inches(ppt_height / 2 - 0.6), Inches(1), Inches(1))
         central_label = central_box.text_frame.add_paragraph()
-        central_label.text = "Cell " + cellnumber
+        central_label.text = "Cell " + cell_number
         central_label.font.size = Pt(30)
 
 

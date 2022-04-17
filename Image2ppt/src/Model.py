@@ -30,3 +30,14 @@ class Model():
         if file.endswith('.png') or file.endswith(".tif") or file.endswith(".jpg") or file.endswith(".jpeg"):
             lst.append(file)
             return lst
+
+    def apply_vertical_margin(self, index, row, column, prefixed_vertical_position, margin_height):
+        # apply margin
+        iter = row * column
+        if 0 <= index % iter < column:
+            fixed_vertical_position = prefixed_vertical_position
+        elif column * (row - 1) <= index % iter < iter:
+            fixed_vertical_position = prefixed_vertical_position + margin_height * 2
+        else:
+            fixed_vertical_position = prefixed_vertical_position + margin_height
+        return fixed_vertical_position
