@@ -44,7 +44,7 @@ jobs:
       working-directory: ./Image2ppt
       run: |
         ls
-        python -m unittest test_src
+        python -m unittest test_src.Image2pptTest
     
         
     
