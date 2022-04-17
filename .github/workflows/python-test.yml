@@ -41,7 +41,8 @@ jobs:
         pip install python-pptx
         
     - name: Run Tests    
-      run: python -m unittest discover ../test_src
+      working-directory: ./Image2ppt
+      run: python -m unittest discover test_src
     
         
     
