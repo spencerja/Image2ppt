@@ -19,8 +19,6 @@ import io
 
 class Controller():
     def __init__(self):
-
-
         self.root = Tk()
         self.model = Model.Model()
         self.view = View.View(self.root)
@@ -90,7 +88,7 @@ class Controller():
         self.combobox_value = parameters[5]
         self.img_list = self.get_images(self.input_path)
         self.img_count = len(self.img_list)
-        self.slide_number = 1
+        #self.slide_number = 1
 
         self.column = int(parameters[0])
         self.row = int(parameters[1])
@@ -143,26 +141,35 @@ class Controller():
 
         self.img_list = self.get_images(self.input_path)
         self.img_count = len(self.img_list)
-        dpi = 72
+
+
         blank_slide = prs.slide_layouts[6]
+
+        #get ppt width in pixels
+        dpi = 72
         ppt_width_in_pixel = self.ppt_width*dpi
         ppt_height_in_pixel = self.ppt_height*dpi
+
         emus_per_px = int(914400 / dpi)
         # panel size in terms of pixel
         pixel_width = int(ppt_width_in_pixel / self.column)
         pixel_height = int(ppt_height_in_pixel / self.row)
+
         # panel width and height in inches
         #width = self.ppt_width / self.column
         #height = self.ppt_height / self.row
 
+        #start adding images on the slide
         for i in range(self.img_count):
-            #prepare blank slide
+            #prepare blank slide if the image reaches threshold
             if i % self.img_iter == 0:
                 image_slide = prs.slides.add_slide(blank_slide)
-                cellnumber = str(ceil(self.slide_number / self.slide_counter))
+                #cellnumber = str(ceil(self.slide_number / self.slide_counter))
+                cellnumber = str(ceil(len(prs.slides)/self.slide_counter))
                 self.ppt_component.textbox(image_slide,cellnumber,self.ppt_width,self.ppt_height)
-                self.slide_number += 1
-                print(self.slide_number)
+                #self.slide_number += 1
+                #print(self.slide_number)
+                print(len(prs.slides))
 
             #prepare image
             current_img = Image.open(self.input_path + '/' + self.img_list[i])
@@ -174,21 +181,21 @@ class Controller():
             #prepare margin for resized image
             margin_width = self.model.get_margin_in_pixel(pixel_width,resized_img.width)
             margin_height = self.model.get_margin_in_pixel(pixel_height, resized_img.height)
-            #prepare panel location
 
+            #prepare panel location
             horizontal = (i % self.column) * (ppt_width_in_pixel / self.column)
             vertical = (i % self.img_iter // self.column) *ppt_height_in_pixel / self.row
+
             #prepare image location based on panel location
             vertical_position = self.apply_vertical_margin(i, self.row, self.column, vertical, margin_height)
             horizontal_position = horizontal + margin_width
-            print(horizontal_position,vertical_position)
+
             #add image to a panel
             with io.BytesIO() as output:
                 #resized_img.save(output, format="GIF")
                 quality_val = 100
                 resized_img.save(output,format = "GIF",quality=quality_val)
                 image_slide.shapes.add_picture(output, horizontal_position*emus_per_px, vertical_position*emus_per_px)
-
 
         self.ppt_component.draw_rectangle(image_slide,self.ppt_width,self.ppt_height)
 
@@ -241,8 +248,3 @@ class SlideComponents:
         pg.text = 'ROUNDED_RECTANGLE'  # TextFrameにテキストを設定
         pg.font.size = Pt(10)  # テキストの文字サイズを10ポイントとする
 
-"""Start part
-"""
-if __name__ == '__main__':
-    c = Controller()
-    c.run()
