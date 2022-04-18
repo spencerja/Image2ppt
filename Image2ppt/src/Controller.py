@@ -23,9 +23,29 @@ class PPTVariables():
         self.column = 0
         self.row = 0
         self.iter = 0
+        self.dpi = 72
+        self.width = 0
+        self.height = 0
+        self.width_in_pixel = 0
+        self.height_in_pixel = 0
+        self.emus_per_px = 0
+        self.panel_pixel_width = 0
+        self.panel_pixel_height = 0
 
-    def getIter(self):
+    def get_iter(self):
         self.iter = self.column*self.row
+
+    def get_length_in_pixels(self):
+        self.width_in_pixel = self.width*self.dpi
+        self.height_in_pixel = self.height*self.dpi
+
+    def get_emus_per_px(self):
+        self.emus_per_px = int(914400 / self.dpi)
+
+    def get_panel_length(self):
+        self.panel_pixel_width = int(self.width_in_pixel / self.column)
+        self.panel_pixel_height = int(self.height_in_pixel / self.row)
+
 
 class Controller():
     def __init__(self):
@@ -34,10 +54,10 @@ class Controller():
         self.view = View.View(self.root)
         self.ppt_variables = PPTVariables()
 
-        config = self.load_config()
+        self.config = self.load_config()
 
-        self.view.input_path_label.configure(text=config.input_path)
-        self.view.output_path_label.configure(text=config.output_path)
+        self.view.input_path_label.configure(text=self.config.input_path)
+        self.view.output_path_label.configure(text=self.config.output_path)
 
         self.bind_to_view()
         self.ppt_component = SlideComponents()
@@ -82,29 +102,28 @@ class Controller():
         #divide ppt
         self.ppt_variables.row = int(self.view.gui_row.get())
         self.ppt_variables.column = int(self.view.gui_column.get())
-        print(self.ppt_variables.iter)
-        self.ppt_column = int(self.view.gui_column.get())
-        self.ppt_row = int(self.view.gui_row.get())
-        self.ppt_variables.getIter()
-        self.ppt_img_iter = self.ppt_variables.iter
+        #self.ppt_column = int(self.view.gui_column.get())
+        #self.ppt_row = int(self.view.gui_row.get())
+        self.ppt_variables.get_iter()
+        #self.ppt_img_iter = self.ppt_variables.iter
 
         #ppt dimension
-        self.ppt_width = float(self.view.gui_ppt_width.get())
-        self.ppt_height = float(self.view.gui_ppt_height.get())
-
+        self.ppt_variables.width = float(self.view.gui_ppt_width.get())
+        self.ppt_variables.height = float(self.view.gui_ppt_height.get())
+        self.ppt_variables.get_length_in_pixels()
         # get ppt width in pixels
-        self.dpi = 72
-        self.ppt_width_in_pixel = self.ppt_width * self.dpi
-        self.ppt_height_in_pixel = self.ppt_height * self.dpi
+        #self.dpi = 72
+        #self.ppt_width_in_pixel = self.ppt_width * self.dpi
+        #self.ppt_height_in_pixel = self.ppt_height * self.dpi
 
-        self.slide_counter = int(self.view.gui_slide_counter.get()) / self.ppt_img_iter
+        self.slide_counter = int(self.view.gui_slide_counter.get()) / self.ppt_variables.iter
 
-        self.emus_per_px = int(914400 / self.dpi)
+        self.emus_per_px = self.ppt_variables.get_emus_per_px()
 
         # panel size in terms of pixel
-        self.panel_pixel_width = int(self.ppt_width_in_pixel / self.ppt_column)
-        self.panel_pixel_height = int(self.ppt_height_in_pixel / self.ppt_row)
-
+        #self.panel_pixel_width = int(self.ppt_variables.width_in_pixel / self.ppt_column)
+        #self.panel_pixel_height = int(self.ppt_height_in_pixel / self.ppt_row)
+        self.ppt_variables.get_panel_length()
         prs = self.append_images_in_ppt()
         #output
         self.output_path = self.view.input_path_label.cget("text")
@@ -149,8 +168,8 @@ class Controller():
     # generate ppt and add images to the ppt
     def append_images_in_ppt(self):
         prs = Presentation()
-        prs.slide_width = Inches(self.ppt_width)
-        prs.slide_height = Inches(self.ppt_height)
+        prs.slide_width = Inches(self.ppt_variables.width)
+        prs.slide_height = Inches(self.ppt_variables.height)
         prs = self.append_images(prs)
         return prs
 
@@ -159,28 +178,28 @@ class Controller():
         #start adding images on the slide
         for i in range(self.img_count):
             #prepare blank slide if the image reaches threshold
-            if i % self.ppt_img_iter == 0:
+            if i % self.ppt_variables.iter == 0:
                 image_slide = prs.slides.add_slide(blank_slide)
                 cell_number = str(ceil(len(prs.slides)/self.slide_counter))
-                self.ppt_component.textbox(image_slide,cell_number,self.ppt_width,self.ppt_height)
+                self.ppt_component.textbox(image_slide,cell_number,self.ppt_variables.width,self.ppt_variables.height)
                 print(len(prs.slides))
 
             #prepare image
             current_img = Image.open(self.input_path + '/' + self.img_list[i])
 
             #resize image
-            ratio = self.model.get_resize_ratio(current_img.width, current_img.height, self.panel_pixel_width, self.panel_pixel_height)
+            ratio = self.model.get_resize_ratio(current_img.width, current_img.height, self.ppt_variables.panel_pixel_width, self.ppt_variables.panel_pixel_height)
             resized_img = current_img.resize((int(current_img.width * ratio), int(current_img.height * ratio)))
 
-            margin_width = self.model.get_margin_in_pixel(self.panel_pixel_width, resized_img.width)
-            margin_height = self.model.get_margin_in_pixel(self.panel_pixel_height, resized_img.height)
+            margin_width = self.model.get_margin_in_pixel(self.ppt_variables.panel_pixel_width, resized_img.width)
+            margin_height = self.model.get_margin_in_pixel(self.ppt_variables.panel_pixel_height, resized_img.height)
 
             #prepare panel location
-            prefixed_horizontal_location = (i % self.ppt_column) * (self.ppt_width_in_pixel / self.ppt_column)
-            prefixed_vertical_location = (i % self.ppt_img_iter // self.ppt_column) *self.ppt_height_in_pixel / self.ppt_row
+            prefixed_horizontal_location = (i % self.ppt_variables.column) * (self.ppt_variables.width_in_pixel / self.ppt_variables.column)
+            prefixed_vertical_location = (i % self.ppt_variables.iter // self.ppt_variables.column) *self.ppt_variables.height_in_pixel / self.ppt_variables.row
 
             #prepare image location based on panel location
-            fixed_vertical_position = self.model.apply_vertical_margin(i, self.ppt_row, self.ppt_column, prefixed_vertical_location, margin_height)
+            fixed_vertical_position = self.model.apply_vertical_margin(i, self.ppt_variables.row, self.ppt_variables.column, prefixed_vertical_location, margin_height)
             fixed_horizontal_position = prefixed_horizontal_location + margin_width
 
             #add image to a panel
@@ -188,9 +207,9 @@ class Controller():
                 #resized_img.save(output, format="GIF")
                 quality_val = 100
                 resized_img.save(output,format = "GIF",quality=quality_val)
-                image_slide.shapes.add_picture(output, fixed_horizontal_position*self.emus_per_px, fixed_vertical_position*self.emus_per_px)
+                image_slide.shapes.add_picture(output, fixed_horizontal_position*self.ppt_variables.emus_per_px, fixed_vertical_position*self.ppt_variables.emus_per_px)
 
-        self.ppt_component.draw_rectangle(image_slide,self.ppt_width,self.ppt_height)
+        self.ppt_component.draw_rectangle(image_slide,self.ppt_variables.width,self.ppt_variables.height)
 
         return prs
 
