@@ -15,9 +15,9 @@ import time
 
 class Model():
     # get ratio for both and use the smaller one to ensure that the image would fit in the slide panel
-    def get_resize_ratio(self, img_width, img_height, pixel_width, pixel_height):
-        ratio_width = pixel_width / img_width
-        ratio_height = pixel_height / img_height
+    def get_resize_ratio(self, img_width, img_height, panel_pixel_width, panel_pixel_height):
+        ratio_width = panel_pixel_width / img_width
+        ratio_height = panel_pixel_height / img_height
         return min(ratio_width, ratio_height)
 
     def get_margin(self, length, resized_length, dpi):

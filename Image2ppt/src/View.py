@@ -15,9 +15,15 @@ import time
 
 
 class View():
+    """View class.
+    """
     def __init__(self, root):
-        #self.path_list = [r"C:\Users\Fridge\Documents\PYGit\Image2ppt\Image2ppt\Input",
-       #                   r"C:\Users\Fridge\Documents\PYGit\Image2ppt\Image2ppt\Output"]
+        """Initialize the class instance
+
+        Args:
+            root (Tk()): main window
+
+        """
         self.path_list = ["Please choose an input folder","Please choose an output folder"]
         self.components = Components()
         self.frame = self.components.create_frame(root)
@@ -26,6 +32,10 @@ class View():
         self.prepare_advanced_tab()
 
     def prepare_general_tab(self):
+        """
+
+        :return:
+        """
         self.general_frame = self.components.create_tab(self.notebook, "General")
         self.input_path_label = self.components.create_label(self.general_frame, self.path_list[0], 0, 0)
         self.input_path_button = self.components.create_button(self.general_frame, "Input path", 0, 1)
@@ -42,6 +52,10 @@ class View():
         self.save_config_button  = self.components.create_button(self.general_frame,"Save Config",8,2)
 
     def prepare_advanced_tab(self):
+        """
+
+        :return:
+        """
         self.advanced_frame = self.components.create_tab(self.notebook, "Advanced")
         self.gui_ppt_width_desc = self.components.create_label(self.advanced_frame, "Slide Width (inches):", 4, 0)
         self.gui_ppt_width = self.components.create_textbox(self.advanced_frame, 26.6666, 4, 1)
@@ -52,20 +66,47 @@ class View():
 
 
 class Components:
+    """Components
+    Tkinter GUI component methods are stored in this class.
 
+    """
     def create_combobox(self,frame,list,row,column):
+        """
+
+        :param frame:
+        :param list:
+        :param row: vertical grid location
+        :param column: horizontal grid location
+        :return: combobox
+        """
         combobox = ttk.Combobox(frame,values = list)
         combobox.set(list[0])
         combobox.grid(row =row,column=column)
         return combobox
 
     def create_textbox(self,frame,text,row,column):
+        """
+
+        :param frame:
+        :param text:
+        :param row:
+        :param column:
+        :return:
+        """
         txt = ttk.Entry(frame,width=20)
         txt.insert(tkinter.END,text)
         txt.grid(row=row,column=column)
         return txt
 
     def create_label(self,frame,text,row,column):
+        """
+
+        :param frame:
+        :param text:
+        :param row:
+        :param column:
+        :return:
+        """
         label1 = ttk.Label(
             frame,
             text=text,
@@ -74,6 +115,14 @@ class Components:
         return label1
 
     def create_button(self,frame, text, row, column):
+        """
+
+        :param frame:
+        :param text:
+        :param row:
+        :param column:
+        :return:
+        """
         button1 = ttk.Button(
             frame,
             text=text,
@@ -82,16 +131,32 @@ class Components:
         return button1
 
     def create_frame(self,root):
+        """
+
+        :param root:
+        :return:
+        """
         frame = ttk.Frame(root, padding=40)
         frame.grid()
         return frame
 
     def create_notebook(self, root):
+        """
+
+        :param root:
+        :return:
+        """
         notebook = ttk.Notebook(root)
         notebook.grid()
         return notebook
 
     def create_tab(self, notebook,text):
+        """
+
+        :param notebook:
+        :param text:
+        :return:
+        """
         frame = ttk.Frame(notebook)
         notebook.add(frame, text=text)
         return frame
