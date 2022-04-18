@@ -32,7 +32,7 @@ jobs:
         ls
         cd src
         ls
-        cd ../test_scr
+        cd ../test_src
         ls
 
     - name: Install dependencies
@@ -41,7 +41,10 @@ jobs:
         pip install python-pptx
         
     - name: Run Tests    
-      run: python -m unittest Image2ppt/test_src/Image2pptTest.py
+      working-directory: ./Image2ppt
+      run: |
+        ls
+        python -m unittest test_src.Image2pptTest
     
         
     
