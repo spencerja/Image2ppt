@@ -27,7 +27,7 @@ class Model():
         return (length-resized_length)/2
 
     def check_image_extension(self,lst,file):
-        if file.endswith('.png') or file.endswith(".tif") or file.endswith(".jpg") or file.endswith(".jpeg"):
+        if file.endswith('.png') or file.endswith(".tif") or file.endswith(".jpg") or file.endswith(".jpeg") or file.endswith(".PNG"):
             lst.append(file)
             return lst
 

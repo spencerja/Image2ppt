@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ac73a7e7-ea29-4db9-8df7-ba03323aca9a" name="Changes" comment="" />
+    <list default="true" id="ac73a7e7-ea29-4db9-8df7-ba03323aca9a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Image2ppt/Input/Picture1.1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Image2ppt/Input/Sample_Cell.tif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Image2ppt/Input/test.pptx" beforeDir="false" afterPath="$PROJECT_DIR$/Image2ppt/Input/test.pptx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Image2ppt/Input/tofu_16.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Image2ppt/src/Controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/Image2ppt/src/Controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Image2ppt/src/Model.py" beforeDir="false" afterPath="$PROJECT_DIR$/Image2ppt/src/Model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Image2ppt/src/View.py" beforeDir="false" afterPath="$PROJECT_DIR$/Image2ppt/src/View.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Image2ppt/src/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/Image2ppt/src/config.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Image2ppt/test_src/Image2pptTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/Image2ppt/test_src/Image2pptTest.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -29,23 +41,23 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/Image2ppt/src/main.py" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.Image2ppt">
-    <configuration name="Image2ppt" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.main">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Image2ppt" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Image2ppt" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="SDK_HOME" value="C:\Users\Spencer Laptop\Documents\py\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Image2ppt/src" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Image2ppt/Image2ppt.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Image2ppt/src/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -96,9 +108,15 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Python.main" />
+      <item itemvalue="Python tests.Python tests for Image2pptTest.MyTestCase" />
+      <item itemvalue="Python tests.Python tests for Image2pptTest.MyTestCase.test_get_resize_ratio_horizontal_image_vertical_slide_panel" />
+      <item itemvalue="Python tests.Python tests in Image2pptTest.py" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.Image2ppt" />
+        <item itemvalue="Python.main" />
         <item itemvalue="Python tests.Python tests for Image2pptTest.MyTestCase" />
         <item itemvalue="Python tests.Python tests for Image2pptTest.MyTestCase.test_get_resize_ratio_horizontal_image_vertical_slide_panel" />
         <item itemvalue="Python tests.Python tests in Image2pptTest.py" />

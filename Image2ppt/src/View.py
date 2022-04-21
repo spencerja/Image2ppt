@@ -41,15 +41,11 @@ class View():
         self.input_path_button = self.components.create_button(self.general_frame, "Input path", 0, 1)
         self.output_path_label = self.components.create_label(self.general_frame, self.path_list[1], 1, 0)
         self.output_path_button = self.components.create_button(self.general_frame, "Output path", 1, 1)
-        self.gui_column_desc = self.components.create_label(self.general_frame, "Column Number:", 2, 0)
-        self.gui_column = self.components.create_textbox(self.general_frame, 4, 2, 1)
-        self.gui_row_desc = self.components.create_label(self.general_frame, "Row Number:", 3, 0)
-        self.gui_row = self.components.create_textbox(self.general_frame, 2, 3, 1)
-        self.ppt_name_label = self.components.create_label(self.general_frame, "Save Name:", 7, 0)
-        self.gui_ppt_name_textbox = self.components.create_textbox(self.general_frame, "test", 7, 1)
-        self.combobox = self.components.create_combobox(self.general_frame,['Ascending','Descending'],8,0)
         self.start_process_button = self.components.create_button(self.general_frame, "Start", 8, 1)
         self.save_config_button  = self.components.create_button(self.general_frame,"Save Config",8,2)
+        self.ppt_name_label = self.components.create_label(self.general_frame, "Save Name:", 7, 0)
+        self.gui_ppt_name_textbox = self.components.create_textbox(self.general_frame, "test", 7, 1)
+
 
     def prepare_advanced_tab(self):
         """
@@ -57,12 +53,21 @@ class View():
         :return:
         """
         self.advanced_frame = self.components.create_tab(self.notebook, "Advanced")
-        self.gui_ppt_width_desc = self.components.create_label(self.advanced_frame, "Slide Width (inches):", 4, 0)
-        self.gui_ppt_width = self.components.create_textbox(self.advanced_frame, 26.6666, 4, 1)
-        self.gui_ppt_height_desc = self.components.create_label(self.advanced_frame, "Slide Height (inches):", 5, 0)
-        self.gui_ppt_height = self.components.create_textbox(self.advanced_frame, 15, 5, 1)
-        self.gui_slide_counter_desc = self.components.create_label(self.advanced_frame, "Images for each cell:", 6, 0)
-        self.gui_slide_counter = self.components.create_textbox(self.advanced_frame, 16, 6, 1)
+        self.gui_ppt_width_desc = self.components.create_label(self.advanced_frame, "Slide Width (inches):", 2, 0)
+        self.gui_ppt_width = self.components.create_textbox(self.advanced_frame, 26.6666, 2, 1)
+        self.gui_ppt_height_desc = self.components.create_label(self.advanced_frame, "Slide Height (inches):", 3, 0)
+        self.gui_ppt_height = self.components.create_textbox(self.advanced_frame, 15, 3, 1)
+        self.gui_slide_counter_desc = self.components.create_label(self.advanced_frame, "Images for each cell:", 4, 0)
+        self.gui_slide_counter = self.components.create_textbox(self.advanced_frame, 16, 4, 1)
+        self.gui_column_desc = self.components.create_label(self.advanced_frame, "Column Number:", 0, 0)
+        self.gui_column = self.components.create_textbox(self.advanced_frame, 4, 0, 1)
+        self.gui_row_desc = self.components.create_label(self.advanced_frame, "Row Number:", 1, 0)
+        self.gui_row = self.components.create_textbox(self.advanced_frame, 2, 1, 1)
+        self.gui_ppt_combobox_desc = self.components.create_label(self.advanced_frame, "Sorting:", 0, 3)
+        self.combobox = self.components.create_combobox(self.advanced_frame,['Alphabetical A-Z','Alphabetical Z-A', "Oldest-Newest","Newest-Oldest"],0,4)
+        self.start_process_button = self.components.create_button(self.advanced_frame, "Start", 1, 3)
+        self.save_config_button  = self.components.create_button(self.advanced_frame,"Save Config",1,4)
+
 
 
 class Components:

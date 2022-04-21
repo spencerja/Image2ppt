@@ -140,11 +140,30 @@ class Controller():
 
 
     def sort_images(self,list_of_files,dir_name):
-        list_of_files = sorted(list_of_files,
+        if self.check_sort()[0]:
+            list_of_files = sorted(list_of_files,
                                key=lambda x: os.path.getmtime(os.path.join(dir_name, x))
-                               , reverse=True
+                               ,reverse=self.check_sort()[1]
                                )
         return list_of_files
+
+    def check_sort(self):
+        if self.combobox_value == "Oldest-Newest":
+            sort = True
+            rev = False
+            return [sort, rev]
+        if self.combobox_value == "Newest-Oldest":
+            sort = True
+            rev = True
+            return [sort, rev]
+        if self.combobox_value == "Alphabetical A-Z":
+            sort = False
+            rev = False
+            return [sort,rev]
+        if self.combobox_value == "Alphabetical Z-A":
+            sort = False
+            rev = True
+            return [sort,rev]
 
     def get_list_of_files(self,dir_name):
         list_of_files = filter(lambda x: os.path.isfile(os.path.join(dir_name, x)),
@@ -155,8 +174,7 @@ class Controller():
         # folder_files = os.listdir(input_path)
         img_list = []
         list_of_files = self.get_list_of_files(input_path)
-        if self.combobox_value == "Ascending":
-            list_of_files= self.sort_images(list_of_files,input_path)
+        list_of_files= self.sort_images(list_of_files,input_path)
 
         for file_name in list_of_files:
             self.model.check_image_extension(img_list,file_name)
