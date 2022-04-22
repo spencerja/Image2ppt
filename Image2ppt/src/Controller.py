@@ -75,9 +75,13 @@ class Controller():
                                          lambda event: self.get_path(event, self.view.input_path_label))
         self.view.output_path_button.bind("<ButtonPress>",
                                           lambda event: self.get_path(event, self.view.output_path_label))
-        self.view.start_process_button.bind("<ButtonPress>", lambda event: self.ppt_generation_process(event))
-        self.view.save_config_button.bind("<ButtonPress>",
+        self.view.start_process_button_general.bind("<ButtonPress>", lambda event: self.ppt_generation_process(event))
+        self.view.save_config_button_general.bind("<ButtonPress>",
                                           lambda event: self.save_config_into_file(event, self.config))
+
+        self.view.start_process_button_advanced.bind("<ButtonPress>", lambda event: self.ppt_generation_process(event))
+        self.view.save_config_button_advanced.bind("<ButtonPress>",
+                                                  lambda event: self.save_config_into_file(event, self.config))
 
     def save_config_into_file(self,event,arg):
         arg.input_path = self.view.input_path_label.cget("text")
