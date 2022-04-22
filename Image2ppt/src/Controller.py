@@ -53,7 +53,6 @@ class Controller():
         self.model = Model.Model()
         self.view = View.View(self.root)
         self.ppt_variables = PPTVariables()
-
         self.config = self.load_config()
 
         self.view.input_path_label.configure(text=self.config.input_path)
@@ -82,6 +81,7 @@ class Controller():
     def save_config_into_file(self,event,arg):
         arg.input_path = self.view.input_path_label.cget("text")
         arg.output_path = self.view.output_path_label.cget("text")
+        #add other parameters here
         with open('config.json', 'w', encoding='utf-8') as f:
             json.dump(arg, f,default=lambda x: x.__dict__, ensure_ascii=False, indent=4)
 
@@ -193,13 +193,16 @@ class Controller():
 
     def append_images(self, prs):
         blank_slide = prs.slide_layouts[6]
+        self.toggle_label = self.view.label_checkbox.get()
         #start adding images on the slide
         for i in range(self.img_count):
             #prepare blank slide if the image reaches threshold
             if i % self.ppt_variables.iter == 0:
                 image_slide = prs.slides.add_slide(blank_slide)
                 cell_number = str(ceil(len(prs.slides)/self.slide_counter))
-                self.ppt_component.textbox(image_slide,cell_number,self.ppt_variables.width,self.ppt_variables.height)
+                self.toggle_label = self.view.label_checkbox.get()
+                if self.toggle_label == True:
+                    self.ppt_component.textbox(image_slide,cell_number,self.ppt_variables.width,self.ppt_variables.height)
                 print(len(prs.slides))
 
             #prepare image
@@ -227,7 +230,7 @@ class Controller():
                 resized_img.save(output,format = "GIF",quality=quality_val)
                 image_slide.shapes.add_picture(output, fixed_horizontal_position*self.ppt_variables.emus_per_px, fixed_vertical_position*self.ppt_variables.emus_per_px)
 
-        self.ppt_component.draw_rectangle(image_slide,self.ppt_variables.width,self.ppt_variables.height)
+        #self.ppt_component.draw_rectangle(image_slide,self.ppt_variables.width,self.ppt_variables.height)
 
         return prs
 
@@ -243,12 +246,11 @@ class ConfigObject:
 
 class SlideComponents:
     def textbox(self, image_slide,cell_number,ppt_width,ppt_height):
-
-        central_box = image_slide.shapes.add_textbox(Inches(ppt_width / 2 - 0.65),
-                                                     Inches(ppt_height / 2 - 0.6), Inches(1), Inches(1))
+        central_box = image_slide.shapes.add_textbox(Inches(ppt_width / 2 - 0.75),
+                                                     Inches(ppt_height / 2 - 0.75), Inches(1), Inches(1))
         central_label = central_box.text_frame.add_paragraph()
         central_label.text = "Cell " + cell_number
-        central_label.font.size = Pt(30)
+        central_label.font.size = Pt(40)
 
 
     def draw_rectangle(self, image_slide,ppt_width,ppt_height):
