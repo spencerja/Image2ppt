@@ -180,9 +180,11 @@ class Controller():
             #prepare blank slide if the image reaches threshold
             if i % self.ppt_variables.iter == 0:
                 image_slide = prs.slides.add_slide(blank_slide)
-                cell_number = str(ceil(len(prs.slides)/self.slide_counter))
-                self.ppt_component.textbox(image_slide,cell_number,self.ppt_variables.width,self.ppt_variables.height)
-                print(len(prs.slides))
+                cell_number_textbox_visible= False;
+                if cell_number_textbox_visible:
+                    cell_number = str(ceil(len(prs.slides)/self.slide_counter))
+                    self.ppt_component.textbox(image_slide,cell_number,self.ppt_variables.width,self.ppt_variables.height)
+
 
             #prepare image
             current_img = Image.open(self.input_path + '/' + self.img_list[i])
