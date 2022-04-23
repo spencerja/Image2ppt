@@ -30,6 +30,8 @@ class View():
         self.notebook = self.components.create_notebook(root)
         self.prepare_general_tab()
         self.prepare_advanced_tab()
+        self.start_process_button = self.components.create_button(self.frame, "Start", 1, 1)
+        self.save_config_button = self.components.create_button(self.frame, "Save Config", 1, 2)
 
     def prepare_general_tab(self):
         """
@@ -41,11 +43,11 @@ class View():
         self.input_path_button = self.components.create_button(self.general_frame, "Input path", 0, 1)
         self.output_path_label = self.components.create_label(self.general_frame, self.path_list[1], 1, 0)
         self.output_path_button = self.components.create_button(self.general_frame, "Output path", 1, 1)
-        self.start_process_button_general = self.components.create_button(self.general_frame, "Start", 8, 1)
-        self.save_config_button_general  = self.components.create_button(self.general_frame,"Save Config",8,2)
+
         self.ppt_name_label = self.components.create_label(self.general_frame, "Save Name:", 7, 0)
         self.gui_ppt_name_textbox = self.components.create_textbox(self.general_frame, "test", 7, 1)
-
+        #self.start_process_button = self.components.create_button(self.general_frame, "Start", 8, 1)
+        #self.save_config_button  = self.components.create_button(self.general_frame,"Save Config",8,2)
 
     def prepare_advanced_tab(self):
         """
@@ -63,11 +65,9 @@ class View():
         self.gui_column = self.components.create_textbox(self.advanced_frame, 4, 0, 1)
         self.gui_row_desc = self.components.create_label(self.advanced_frame, "Row Number:", 1, 0)
         self.gui_row = self.components.create_textbox(self.advanced_frame, 2, 1, 1)
-        self.gui_ppt_combobox_desc = self.components.create_label(self.advanced_frame, "Sorting:", 0, 3)
+        self.combo_label = self.components.create_label(self.advanced_frame, "Sorting:", 0, 3)
         self.combobox = self.components.create_combobox(self.advanced_frame,['Alphabetical A-Z','Alphabetical Z-A', "Oldest-Newest","Newest-Oldest"],0,4)
         self.label_checkbox = self.components.create_checkbox(self.advanced_frame, "Label Slides?", 1, 4)
-        self.start_process_button_advanced = self.components.create_button(self.advanced_frame, "Start", 2, 3)
-        self.save_config_button_advanced  = self.components.create_button(self.advanced_frame,"Save Config",2,4)
 
 class Components:
     """Components
@@ -141,7 +141,7 @@ class Components:
         :return:
         """
         frame = ttk.Frame(root, padding=40)
-        frame.grid()
+        frame.grid(row=1,column=1)
         return frame
 
     def create_notebook(self, root):
@@ -151,7 +151,7 @@ class Components:
         :return:
         """
         notebook = ttk.Notebook(root)
-        notebook.grid()
+        notebook.grid(row=0,column=0,columnspan = 2)
         return notebook
 
     def create_tab(self, notebook,text):
