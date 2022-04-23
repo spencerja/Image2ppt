@@ -63,9 +63,19 @@ class Controller():
     def config_data_into_view(self):
         self.view.input_path_label.configure(text=self.config.input_path)
         self.view.output_path_label.configure(text=self.config.output_path)
-        #self.view.gui_ppt_name_textbox.delete('0', END)
-        #self.view.gui_ppt_name_textbox.insert(tkinter.END,self.config.ppt_name)
-        #self.view.combobox.set(self.config.sort_method)
+        self.view.gui_ppt_name_textbox.delete('0', END)
+        self.view.gui_ppt_name_textbox.insert(tkinter.END,self.config.ppt_name)
+        self.view.gui_row.delete('0', END)
+        self.view.gui_row.insert(tkinter.END,self.config.row)
+        self.view.gui_column.delete('0', END)
+        self.view.gui_column.insert(tkinter.END, self.config.column)
+        self.view.gui_ppt_width.delete('0', END)
+        self.view.gui_ppt_width.insert(tkinter.END, self.config.width)
+        self.view.gui_ppt_height.delete('0', END)
+        self.view.gui_ppt_height.insert(tkinter.END, self.config.height)
+        self.view.gui_slide_counter.delete('0', END)
+        self.view.gui_slide_counter.insert(tkinter.END, self.config.cell_number)
+        self.view.combobox.set(self.config.sort_method)
 
     def load_config(self):
         config = ConfigObject()
@@ -88,6 +98,11 @@ class Controller():
         config.input_path = self.view.input_path_label.cget("text")
         config.output_path = self.view.output_path_label.cget("text")
         config.ppt_name = self.view.gui_ppt_name_textbox.get()
+        config.row = self.view.gui_row.get()
+        config.column = self.view.gui_column.get()
+        config.width = self.view.gui_ppt_width.get()
+        config.height = self.view.gui_ppt_height.get()
+        config.cell_number = self.view.gui_slide_counter.get()
         config.sort_method = self.view.combobox.get()
         with open('config.json', 'w', encoding='utf-8') as f:
             json.dump(config, f,default=lambda x: x.__dict__, ensure_ascii=False, indent=4)
@@ -228,15 +243,15 @@ class LoadingConfig(object):
 
 class ConfigObject:
     def __init__(self):
-        self.input_path = None
-        self.output_path = None
-        self.ppt_name = None
+        self.input_path = "Please choose an input folder"
+        self.output_path = "Please choose an output folder"
+        self.ppt_name = "test"
 
-        #self.row = None
-        #self.column = None
-        #self.width = None
-        #self.height = None
-        #self.cell_number = None
+        self.row = 2
+        self.column = 4
+        self.width = 26.6666
+        self.height = 15
+        self.cell_number = 16
         self.sort_method = 'Alphabetical A-Z'
 
 class SlideComponents:
