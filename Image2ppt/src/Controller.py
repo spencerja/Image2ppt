@@ -56,11 +56,15 @@ class Controller():
 
         self.config = self.load_config()
 
-        self.view.input_path_label.configure(text=self.config.input_path)
-        self.view.output_path_label.configure(text=self.config.output_path)
-
+        self.config_data_into_view()
         self.bind_to_view()
         self.ppt_component = SlideComponents()
+
+    def config_data_into_view(self):
+        self.view.input_path_label.configure(text=self.config.input_path)
+        self.view.output_path_label.configure(text=self.config.output_path)
+        self.view.gui_ppt_name_textbox.delete('0', END)
+        self.view.gui_ppt_name_textbox.insert(tkinter.END,self.config.ppt_name)
 
     def load_config(self):
         config = ConfigObject()
@@ -82,6 +86,7 @@ class Controller():
     def save_config_into_file(self,event,arg):
         arg.input_path = self.view.input_path_label.cget("text")
         arg.output_path = self.view.output_path_label.cget("text")
+        arg.ppt_name = self.view.gui_ppt_name_textbox.get()
         with open('config.json', 'w', encoding='utf-8') as f:
             json.dump(arg, f,default=lambda x: x.__dict__, ensure_ascii=False, indent=4)
 
@@ -102,35 +107,24 @@ class Controller():
         #divide ppt
         self.ppt_variables.row = int(self.view.gui_row.get())
         self.ppt_variables.column = int(self.view.gui_column.get())
-        #self.ppt_column = int(self.view.gui_column.get())
-        #self.ppt_row = int(self.view.gui_row.get())
         self.ppt_variables.get_iter()
-        #self.ppt_img_iter = self.ppt_variables.iter
 
         #ppt dimension
         self.ppt_variables.width = float(self.view.gui_ppt_width.get())
         self.ppt_variables.height = float(self.view.gui_ppt_height.get())
         self.ppt_variables.get_length_in_pixels()
-        # get ppt width in pixels
-        #self.dpi = 72
-        #self.ppt_width_in_pixel = self.ppt_width * self.dpi
-        #self.ppt_height_in_pixel = self.ppt_height * self.dpi
 
         self.slide_counter = int(self.view.gui_slide_counter.get()) / self.ppt_variables.iter
 
         self.emus_per_px = self.ppt_variables.get_emus_per_px()
 
-        # panel size in terms of pixel
-        #self.panel_pixel_width = int(self.ppt_variables.width_in_pixel / self.ppt_column)
-        #self.panel_pixel_height = int(self.ppt_height_in_pixel / self.ppt_row)
         self.ppt_variables.get_panel_length()
         prs = self.append_images_in_ppt()
         #output
+        self.ppt_name = self.view.gui_ppt_name_textbox.get()
         self.output_path = self.view.input_path_label.cget("text")
-        prs.save(self.output_path + '/' + self.view.gui_ppt_name_textbox.get() + '.pptx')
-        os.startfile(self.output_path + '/' + self.view.gui_ppt_name_textbox.get() + '.pptx')
-
-
+        prs.save(self.output_path + '/' + self.ppt_name + '.pptx')
+        os.startfile(self.output_path + '/' + self.ppt_name + '.pptx')
 
 
     def run(self):
@@ -233,6 +227,7 @@ class ConfigObject:
     def __init__(self):
         self.input_path = None
         self.output_path = None
+        self.ppt_name = None
 
 class SlideComponents:
     def textbox(self, image_slide,cell_number,ppt_width,ppt_height):
@@ -249,15 +244,15 @@ class SlideComponents:
         tx_height = 1
         tx_top = Inches((ppt_height - tx_height) / 2)
         tx_left = Inches((ppt_width - tx_width) / 2)
-        rect0 = image_slide.shapes.add_shape(  # shapeオブジェクト➀を追加
-            MSO_SHAPE.ROUNDED_RECTANGLE,  # 図形の種類を[丸角四角形]に指定
-            tx_left, tx_top,  # 挿入位置の指定　左上の座標の指定
-            Inches(tx_width), Inches(tx_height))  # 挿入図形の幅と高さの指定
+        rect0 = image_slide.shapes.add_shape(
+            MSO_SHAPE.ROUNDED_RECTANGLE,
+            tx_left, tx_top,
+            Inches(tx_width), Inches(tx_height))
 
-        rect0.fill.solid()  # shapeオブジェクト➀を単色で塗り潰す
-        rect0.fill.fore_color.rgb = RGBColor(250, 100, 100)  # RGB指定で色を指定
+        rect0.fill.solid()
+        rect0.fill.fore_color.rgb = RGBColor(250, 100, 100)
 
-        pg = rect0.text_frame.paragraphs[0]  # shapeオブジェクト➀のTextFrameの取得
-        pg.text = 'ROUNDED_RECTANGLE'  # TextFrameにテキストを設定
-        pg.font.size = Pt(10)  # テキストの文字サイズを10ポイントとする
+        pg = rect0.text_frame.paragraphs[0]
+        pg.text = 'ROUNDED_RECTANGLE'
+        pg.font.size = Pt(10)
 
