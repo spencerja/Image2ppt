@@ -1,5 +1,6 @@
 {
-    "input_path": "C:/Users/Fridge/Documents/PYGit/Image2ppt/Image2ppt/Input",
-    "output_path": "C:/Users/Fridge/Documents/PYGit/Image2ppt/Image2ppt/Output",
-    "ppt_name": "test"
+    "input_path": "Please choose an input folder",
+    "output_path": "Please choose an output folder",
+    "ppt_name": "test4",
+    "sort_method": "Alphabetical A-Z"
 }

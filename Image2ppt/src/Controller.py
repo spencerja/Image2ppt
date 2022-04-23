@@ -63,8 +63,9 @@ class Controller():
     def config_data_into_view(self):
         self.view.input_path_label.configure(text=self.config.input_path)
         self.view.output_path_label.configure(text=self.config.output_path)
-        self.view.gui_ppt_name_textbox.delete('0', END)
-        self.view.gui_ppt_name_textbox.insert(tkinter.END,self.config.ppt_name)
+        #self.view.gui_ppt_name_textbox.delete('0', END)
+        #self.view.gui_ppt_name_textbox.insert(tkinter.END,self.config.ppt_name)
+        #self.view.combobox.set(self.config.sort_method)
 
     def load_config(self):
         config = ConfigObject()
@@ -83,18 +84,19 @@ class Controller():
         self.view.save_config_button.bind("<ButtonPress>",
                                           lambda event: self.save_config_into_file(event, self.config))
 
-    def save_config_into_file(self,event,arg):
-        arg.input_path = self.view.input_path_label.cget("text")
-        arg.output_path = self.view.output_path_label.cget("text")
-        arg.ppt_name = self.view.gui_ppt_name_textbox.get()
+    def save_config_into_file(self,event,config):
+        config.input_path = self.view.input_path_label.cget("text")
+        config.output_path = self.view.output_path_label.cget("text")
+        config.ppt_name = self.view.gui_ppt_name_textbox.get()
+        config.sort_method = self.view.combobox.get()
         with open('config.json', 'w', encoding='utf-8') as f:
-            json.dump(arg, f,default=lambda x: x.__dict__, ensure_ascii=False, indent=4)
+            json.dump(config, f,default=lambda x: x.__dict__, ensure_ascii=False, indent=4)
 
 
-    def get_path(self, event, arg):
+    def get_path(self, event, config):
         selected_path = filedialog.askdirectory()
         if not selected_path=="":
-            arg.configure(text=selected_path)
+            config.configure(text=selected_path)
 
     def ppt_generation_process(self, event):
         #tkinter.Tk().withdraw()
@@ -155,7 +157,7 @@ class Controller():
         if self.combobox_value == 'Alphabetical A-Z':
             list_of_files = self.sort_images_alphabetically(list_of_files)
         elif self.combobox_value == 'Alphabetical Z-A':
-            list_of_files = self.sort_images_alphabetically(list_of_files,reverse=True)
+            list_of_files = self.sort_images_alphabetically(list_of_files,True)
         elif self.combobox_value == "Oldest-Newest":
             list_of_files = self.sort_images_by_date(list_of_files, input_path)
         elif self.combobox_value == "Newest-Oldest":
@@ -179,14 +181,15 @@ class Controller():
     def append_images(self, prs):
         blank_slide = prs.slide_layouts[6]
         #start adding images on the slide
+
         for i in range(self.img_count):
             #prepare blank slide if the image reaches threshold
             if i % self.ppt_variables.iter == 0:
                 image_slide = prs.slides.add_slide(blank_slide)
-                cell_number_textbox_visible= False;
-                if cell_number_textbox_visible:
-                    cell_number = str(ceil(len(prs.slides)/self.slide_counter))
-                    self.ppt_component.textbox(image_slide,cell_number,self.ppt_variables.width,self.ppt_variables.height)
+                #cell_number_textbox_visible= False;
+                #if cell_number_textbox_visible:
+                #    cell_number = str(ceil(len(prs.slides)/self.slide_counter))
+                #    self.ppt_component.textbox(image_slide,cell_number,self.ppt_variables.width,self.ppt_variables.height)
 
 
             #prepare image
@@ -228,6 +231,13 @@ class ConfigObject:
         self.input_path = None
         self.output_path = None
         self.ppt_name = None
+
+        #self.row = None
+        #self.column = None
+        #self.width = None
+        #self.height = None
+        #self.cell_number = None
+        self.sort_method = 'Alphabetical A-Z'
 
 class SlideComponents:
     def textbox(self, image_slide,cell_number,ppt_width,ppt_height):
