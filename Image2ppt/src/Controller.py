@@ -138,11 +138,13 @@ class Controller():
         self.root.title("Image2ppt")
         self.root.mainloop()
 
+    def sort_images_alphabetically(self,list_of_files,reverse=False):
+        return sorted(list_of_files,reverse=reverse)
 
-    def sort_images(self,list_of_files,dir_name):
+    def sort_images_by_date(self,list_of_files,dir_name,reverse=False):
         list_of_files = sorted(list_of_files,
                                key=lambda x: os.path.getmtime(os.path.join(dir_name, x))
-                               , reverse=True
+                               , reverse=reverse
                                )
         return list_of_files
 
@@ -155,8 +157,15 @@ class Controller():
         # folder_files = os.listdir(input_path)
         img_list = []
         list_of_files = self.get_list_of_files(input_path)
-        if self.combobox_value == "Ascending":
-            list_of_files= self.sort_images(list_of_files,input_path)
+
+        if self.combobox_value == 'Alphabetical A-Z':
+            list_of_files = self.sort_images_alphabetically(list_of_files)
+        elif self.combobox_value == 'Alphabetical Z-A':
+            list_of_files = self.sort_images_alphabetically(list_of_files,reverse=True)
+        elif self.combobox_value == "Oldest-Newest":
+            list_of_files = self.sort_images_by_date(list_of_files, input_path)
+        elif self.combobox_value == "Newest-Oldest":
+            list_of_files = self.sort_images_by_date(list_of_files, input_path,True)
 
         for file_name in list_of_files:
             self.model.check_image_extension(img_list,file_name)

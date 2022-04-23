@@ -66,7 +66,7 @@ class View():
         self.gui_row_desc = self.components.create_label(self.advanced_frame, "Row Number:", 3, 0)
         self.gui_row = self.components.create_textbox(self.advanced_frame, 2, 3, 1)
         self.combo_label = self.components.create_label(self.advanced_frame, "Sorting:", 8, 0)
-        self.combobox = self.components.create_combobox(self.advanced_frame, ['Ascending', 'Descending'], 8, 1)
+        self.combobox = self.components.create_combobox(self.advanced_frame, ['Alphabetical A-Z','Alphabetical Z-A', "Oldest-Newest","Newest-Oldest"], 8, 1)
 
 
 class Components:
