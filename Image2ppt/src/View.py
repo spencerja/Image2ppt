@@ -67,6 +67,7 @@ class View():
         self.gui_row = self.components.create_textbox(self.advanced_frame, 2, 3, 1)
         self.combo_label = self.components.create_label(self.advanced_frame, "Sorting:", 8, 0)
         self.combobox = self.components.create_combobox(self.advanced_frame, ['Alphabetical A-Z','Alphabetical Z-A', "Oldest-Newest","Newest-Oldest"], 8, 1)
+        self.label_checkbox = self.components.create_checkbox(self.advanced_frame, "Label Slides?", 1, 4)
 
 
 class Components:
@@ -164,3 +165,10 @@ class Components:
         frame = ttk.Frame(notebook)
         notebook.add(frame, text=text)
         return frame
+
+    def create_checkbox(self, frame, text, row, column):
+        toggle_label = BooleanVar()
+        toggle_label.set(True)
+        checkbox = Checkbutton(frame, text=text, variable=toggle_label, command = toggle_label)
+        checkbox.grid(row =row,column=column)
+        return toggle_label

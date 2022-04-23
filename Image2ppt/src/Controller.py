@@ -75,6 +75,7 @@ class Controller():
         self.view.gui_ppt_height.insert(tkinter.END, self.config.height)
         self.view.gui_cell_image_total.delete('0', END)
         self.view.gui_cell_image_total.insert(tkinter.END, self.config.cell_image_total)
+        self.view.label_checkbox.set(self.config.show_textbox)
         self.view.combobox.set(self.config.sort_method)
 
     def load_config(self):
@@ -103,6 +104,7 @@ class Controller():
         config.width = self.view.gui_ppt_width.get()
         config.height = self.view.gui_ppt_height.get()
         config.cell_image_total = self.view.gui_cell_image_total.get()
+        config.show_textbox = self.view.label_checkbox.get()
         config.sort_method = self.view.combobox.get()
         with open('config.json', 'w', encoding='utf-8') as f:
             json.dump(config, f,default=lambda x: x.__dict__, ensure_ascii=False, indent=4)
@@ -134,6 +136,7 @@ class Controller():
         #elf.slide_counter = int(self.view.gui_slide_counter.get()) / self.ppt_variables.iter
         self.cell_image_total = int(self.view.gui_cell_image_total.get())/self.ppt_variables.iter
         self.emus_per_px = self.ppt_variables.get_emus_per_px()
+        self.show_textbox = self.view.label_checkbox.get()
 
         self.ppt_variables.get_panel_length()
         prs = self.append_images_in_ppt()
@@ -201,8 +204,8 @@ class Controller():
             #prepare blank slide if the image reaches threshold
             if i % self.ppt_variables.iter == 0:
                 image_slide = prs.slides.add_slide(blank_slide)
-                cell_number_textbox_visible= True;
-                if cell_number_textbox_visible:
+
+                if self.show_textbox:
                     cell_number = str(ceil(len(prs.slides)/self.cell_image_total))
                     self.ppt_component.textbox(image_slide,cell_number,self.ppt_variables.width,self.ppt_variables.height)
 
@@ -252,6 +255,7 @@ class ConfigObject:
         self.width = 26.6666
         self.height = 15
         self.cell_image_total = 16
+        self.show_textbox = True
         self.sort_method = 'Alphabetical A-Z'
 
 class SlideComponents:
