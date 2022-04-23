@@ -57,12 +57,20 @@ class Controller():
 
         self.view.input_path_label.configure(text=self.config.input_path)
         self.view.output_path_label.configure(text=self.config.output_path)
+        self.view.gui_ppt_name_textbox.configure(text=self.config.save_name)
+        self.view.combobox.configure(text=self.config.combobox_value)
+        self.view.gui_ppt_width.configure(text=self.config.ppt_width)
+        self.view.gui_ppt_height.configure(text=self.config.ppt_height)
+        self.view.gui_slide_counter.configure(text=self.config.slide_counter)
+        self.view.gui_column.configure(text=self.config.slide_column)
+        self.view.gui_row.configure(text=self.config.slide_row)
+        #self.view.label_checkbox.configure(text=self.config.checkbox)
 
         self.bind_to_view()
         self.ppt_component = SlideComponents()
 
     def load_config(self):
-        config = ConfigObject()
+        #config = ConfigObject() unnecessary??
         if os.path.isfile("config.json"):
             with open('config.json', 'r') as f:
                 data = json.load(f)
@@ -85,6 +93,15 @@ class Controller():
     def save_config_into_file(self,event,arg):
         arg.input_path = self.view.input_path_label.cget("text")
         arg.output_path = self.view.output_path_label.cget("text")
+        arg.save_name = self.view.gui_ppt_name_textbox.cget("text") #may need modification?
+        arg.combobox_value = self.view.combobox.get()
+        arg.ppt_width = self.view.gui_ppt_width.get()
+        arg.ppt_height = self.view.gui_ppt_height.get()
+        arg.slide_counter = self.view.gui_slide_counter.get()
+        arg.slide_column = self.view.gui_column.get()
+        arg.slide_row = self.view.gui_row.get()
+        arg.checkbox = self.view.label_checkbox.get()
+
         #add other parameters here
         with open('config.json', 'w', encoding='utf-8') as f:
             json.dump(arg, f,default=lambda x: x.__dict__, ensure_ascii=False, indent=4)

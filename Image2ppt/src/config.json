@@ -1,4 +1,12 @@
 {
-    "input_path": "C:/Users/Spencer Laptop/Documents/py/mvc/Image2ppt/Image2ppt/Input",
-    "output_path": "C:/Users/Spencer Laptop/Documents/py/mvc/Image2ppt/Image2ppt/Output"
+    "input_path": "C:/Users/Spencer Laptop/Documents",
+    "output_path": "C:/Users/Spencer Laptop/Documents/py/mvc/Image2ppt/Image2ppt/Output",
+    "save_name": "",
+    "combobox_value": "Alphabetical A-Z",
+    "ppt_width": "26.6666",
+    "ppt_height": "15",
+    "slide_counter": "16",
+    "slide_column": "4",
+    "slide_row": "2",
+    "checkbox": true
 }
