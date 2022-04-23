@@ -73,8 +73,8 @@ class Controller():
         self.view.gui_ppt_width.insert(tkinter.END, self.config.width)
         self.view.gui_ppt_height.delete('0', END)
         self.view.gui_ppt_height.insert(tkinter.END, self.config.height)
-        self.view.gui_slide_counter.delete('0', END)
-        self.view.gui_slide_counter.insert(tkinter.END, self.config.cell_number)
+        self.view.gui_cell_image_total.delete('0', END)
+        self.view.gui_cell_image_total.insert(tkinter.END, self.config.cell_image_total)
         self.view.combobox.set(self.config.sort_method)
 
     def load_config(self):
@@ -102,7 +102,7 @@ class Controller():
         config.column = self.view.gui_column.get()
         config.width = self.view.gui_ppt_width.get()
         config.height = self.view.gui_ppt_height.get()
-        config.cell_number = self.view.gui_slide_counter.get()
+        config.cell_image_total = self.view.gui_cell_image_total.get()
         config.sort_method = self.view.combobox.get()
         with open('config.json', 'w', encoding='utf-8') as f:
             json.dump(config, f,default=lambda x: x.__dict__, ensure_ascii=False, indent=4)
@@ -131,8 +131,8 @@ class Controller():
         self.ppt_variables.height = float(self.view.gui_ppt_height.get())
         self.ppt_variables.get_length_in_pixels()
 
-        self.slide_counter = int(self.view.gui_slide_counter.get()) / self.ppt_variables.iter
-
+        #elf.slide_counter = int(self.view.gui_slide_counter.get()) / self.ppt_variables.iter
+        self.cell_image_total = int(self.view.gui_cell_image_total.get())/self.ppt_variables.iter
         self.emus_per_px = self.ppt_variables.get_emus_per_px()
 
         self.ppt_variables.get_panel_length()
@@ -201,10 +201,10 @@ class Controller():
             #prepare blank slide if the image reaches threshold
             if i % self.ppt_variables.iter == 0:
                 image_slide = prs.slides.add_slide(blank_slide)
-                #cell_number_textbox_visible= False;
-                #if cell_number_textbox_visible:
-                #    cell_number = str(ceil(len(prs.slides)/self.slide_counter))
-                #    self.ppt_component.textbox(image_slide,cell_number,self.ppt_variables.width,self.ppt_variables.height)
+                cell_number_textbox_visible= True;
+                if cell_number_textbox_visible:
+                    cell_number = str(ceil(len(prs.slides)/self.cell_image_total))
+                    self.ppt_component.textbox(image_slide,cell_number,self.ppt_variables.width,self.ppt_variables.height)
 
 
             #prepare image
@@ -251,7 +251,7 @@ class ConfigObject:
         self.column = 4
         self.width = 26.6666
         self.height = 15
-        self.cell_number = 16
+        self.cell_image_total = 16
         self.sort_method = 'Alphabetical A-Z'
 
 class SlideComponents:

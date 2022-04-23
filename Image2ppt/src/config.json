@@ -1,0 +1,11 @@
+{
+    "input_path": "C:/Users/Fridge/Documents/PYGit/Image2ppt/Image2ppt/Input",
+    "output_path": "C:/Users/Fridge/Documents/PYGit/Image2ppt/Image2ppt/Output",
+    "ppt_name": "test",
+    "row": "2",
+    "column": "4",
+    "width": "26.6666",
+    "height": "15",
+    "cell_image_total": "16",
+    "sort_method": "Alphabetical A-Z"
+}
