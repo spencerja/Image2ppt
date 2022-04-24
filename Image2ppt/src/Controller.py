@@ -63,19 +63,20 @@ class Controller():
     def config_data_into_view(self):
         self.view.input_path_label.configure(text=self.config.input_path)
         self.view.output_path_label.configure(text=self.config.output_path)
-        self.view.gui_ppt_name_textbox.configure(text=self.config.ppt_name)
-        self.view.combobox.configure(text=self.config.combobox_value)
-        self.view.gui_ppt_width.configure(text=self.config.ppt_width)
-        self.view.gui_ppt_height.configure(text=self.config.ppt_height)
-        self.view.gui_slide_counter.configure(text=self.config.slide_counter)
-        self.view.gui_column.configure(text=self.config.slide_column)
-        self.view.gui_row.configure(text=self.config.slide_row)
-
         self.view.gui_ppt_name_textbox.delete('0', END)
         self.view.gui_ppt_name_textbox.insert(tkinter.END,self.config.ppt_name)
+        self.view.gui_row.delete('0', END)
+        self.view.gui_row.insert(tkinter.END,self.config.row)
+        self.view.gui_column.delete('0', END)
+        self.view.gui_column.insert(tkinter.END, self.config.column)
+        self.view.gui_ppt_width.delete('0', END)
+        self.view.gui_ppt_width.insert(tkinter.END, self.config.width)
+        self.view.gui_ppt_height.delete('0', END)
+        self.view.gui_ppt_height.insert(tkinter.END, self.config.height)
+        self.view.gui_cell_image_total.delete('0', END)
+        self.view.gui_cell_image_total.insert(tkinter.END, self.config.cell_image_total)
+        self.view.label_checkbox.set(self.config.show_textbox)
         self.view.combobox.set(self.config.sort_method)
-
-        #self.view.label_checkbox.configure(text=self.config.checkbox)
 
     def load_config(self):
         config = ConfigObject()
@@ -98,15 +99,13 @@ class Controller():
         config.input_path = self.view.input_path_label.cget("text")
         config.output_path = self.view.output_path_label.cget("text")
         config.ppt_name = self.view.gui_ppt_name_textbox.get()
+        config.row = self.view.gui_row.get()
+        config.column = self.view.gui_column.get()
+        config.width = self.view.gui_ppt_width.get()
+        config.height = self.view.gui_ppt_height.get()
+        config.cell_image_total = self.view.gui_cell_image_total.get()
+        config.show_textbox = self.view.label_checkbox.get()
         config.sort_method = self.view.combobox.get()
-        config.ppt_width = self.view.gui_ppt_width.get()
-        config.ppt_height = self.view.gui_ppt_height.get()
-        config.slide_counter = self.view.gui_slide_counter.get()
-        config.slide_column = self.view.gui_column.get()
-        config.slide_row = self.view.gui_row.get()
-        config.checkbox = self.view.label_checkbox.get()
-
-        #add other parameters here
         with open('config.json', 'w', encoding='utf-8') as f:
             json.dump(config, f,default=lambda x: x.__dict__, ensure_ascii=False, indent=4)
 
@@ -117,7 +116,6 @@ class Controller():
             config.configure(text=selected_path)
 
     def ppt_generation_process(self, event):
-        #tkinter.Tk().withdraw()
         #input
         self.combobox_value = self.view.combobox.get()
         self.input_path = self.view.input_path_label.cget("text")
@@ -134,21 +132,20 @@ class Controller():
         self.ppt_variables.height = float(self.view.gui_ppt_height.get())
         self.ppt_variables.get_length_in_pixels()
 
-        self.slide_counter = int(self.view.gui_slide_counter.get()) / self.ppt_variables.iter
-
+        self.cell_image_total = int(self.view.gui_cell_image_total.get())/self.ppt_variables.iter
         self.emus_per_px = self.ppt_variables.get_emus_per_px()
+        self.show_textbox = self.view.label_checkbox.get()
 
         self.ppt_variables.get_panel_length()
         prs = self.append_images_in_ppt()
         #output
         self.ppt_name = self.view.gui_ppt_name_textbox.get()
-        self.output_path = self.view.input_path_label.cget("text")
+        self.output_path = self.view.output_path_label.cget("text")
         prs.save(self.output_path + '/' + self.ppt_name + '.pptx')
         os.startfile(self.output_path + '/' + self.ppt_name + '.pptx')
 
 
     def run(self):
-        self.root.minsize(width=500, height=300)
         self.root.title("Image2ppt")
         self.root.mainloop()
 
@@ -168,7 +165,6 @@ class Controller():
         return list_of_files
 
     def get_images(self, input_path):
-        # folder_files = os.listdir(input_path)
         img_list = []
         list_of_files = self.get_list_of_files(input_path)
 
@@ -198,46 +194,46 @@ class Controller():
 
     def append_images(self, prs):
         blank_slide = prs.slide_layouts[6]
-        self.toggle_label = self.view.label_checkbox.get()
+        cell = int(self.view.gui_cell_image_total.get())
+        unique_cell_iter = ceil(self.img_count / cell)
+        slide_iter = ceil(cell / self.ppt_variables.iter)
         #start adding images on the slide
+        for count in range(unique_cell_iter):
+            for i in range(cell):
+                x = i+cell*count
+                #prepare blank slide if the image reaches threshold
+                if i % self.ppt_variables.iter == 0 and self.img_count > x:
+                    image_slide = prs.slides.add_slide(blank_slide)
+                    #produce cell count textbox
+                    if self.show_textbox:
+                        cell_number = str(ceil(len(prs.slides)/slide_iter))
+                        self.ppt_component.textbox(image_slide,cell_number,self.ppt_variables.width,self.ppt_variables.height)
+                #prepare image
+                if x < len(self.img_list):
+                    current_img = Image.open(self.input_path + '/' + self.img_list[x])
 
-        for i in range(self.img_count):
-            #prepare blank slide if the image reaches threshold
-            if i % self.ppt_variables.iter == 0:
-                image_slide = prs.slides.add_slide(blank_slide)
-                cell_number = str(ceil(len(prs.slides)/self.slide_counter))
-                self.toggle_label = self.view.label_checkbox.get()
-                if self.toggle_label == True:
-                    self.ppt_component.textbox(image_slide,cell_number,self.ppt_variables.width,self.ppt_variables.height)
-                print(len(prs.slides))
+                    #resize image
+                    ratio = self.model.get_resize_ratio(current_img.width, current_img.height, self.ppt_variables.panel_pixel_width, self.ppt_variables.panel_pixel_height)
+                    resized_img = current_img.resize((int(current_img.width * ratio), int(current_img.height * ratio)))
 
-            #prepare image
-            current_img = Image.open(self.input_path + '/' + self.img_list[i])
+                    margin_width = self.model.get_margin_in_pixel(self.ppt_variables.panel_pixel_width, resized_img.width)
+                    margin_height = self.model.get_margin_in_pixel(self.ppt_variables.panel_pixel_height, resized_img.height)
 
-            #resize image
-            ratio = self.model.get_resize_ratio(current_img.width, current_img.height, self.ppt_variables.panel_pixel_width, self.ppt_variables.panel_pixel_height)
-            resized_img = current_img.resize((int(current_img.width * ratio), int(current_img.height * ratio)))
+                    #prepare panel location
+                    prefixed_horizontal_location = (i % self.ppt_variables.column) * (self.ppt_variables.width_in_pixel / self.ppt_variables.column)
+                    prefixed_vertical_location = (i % self.ppt_variables.iter // self.ppt_variables.column) *self.ppt_variables.height_in_pixel / self.ppt_variables.row
 
-            margin_width = self.model.get_margin_in_pixel(self.ppt_variables.panel_pixel_width, resized_img.width)
-            margin_height = self.model.get_margin_in_pixel(self.ppt_variables.panel_pixel_height, resized_img.height)
+                    #prepare image location based on panel location
+                    fixed_vertical_position = self.model.apply_vertical_margin(i, self.ppt_variables.row, self.ppt_variables.column, prefixed_vertical_location, margin_height)
+                    fixed_horizontal_position = prefixed_horizontal_location + margin_width
 
-            #prepare panel location
-            prefixed_horizontal_location = (i % self.ppt_variables.column) * (self.ppt_variables.width_in_pixel / self.ppt_variables.column)
-            prefixed_vertical_location = (i % self.ppt_variables.iter // self.ppt_variables.column) *self.ppt_variables.height_in_pixel / self.ppt_variables.row
-
-            #prepare image location based on panel location
-            fixed_vertical_position = self.model.apply_vertical_margin(i, self.ppt_variables.row, self.ppt_variables.column, prefixed_vertical_location, margin_height)
-            fixed_horizontal_position = prefixed_horizontal_location + margin_width
-
-            #add image to a panel
-            with io.BytesIO() as output:
-                #resized_img.save(output, format="GIF")
-                quality_val = 100
-                resized_img.save(output,format = "GIF",quality=quality_val)
-                image_slide.shapes.add_picture(output, fixed_horizontal_position*self.ppt_variables.emus_per_px, fixed_vertical_position*self.ppt_variables.emus_per_px)
-
-        #self.ppt_component.draw_rectangle(image_slide,self.ppt_variables.width,self.ppt_variables.height)
-
+                    #add image to a panel
+                    with io.BytesIO() as output:
+                        #resized_img.save(output, format="GIF")
+                        quality_val = 100
+                        resized_img.save(output,format = "GIF",quality=quality_val)
+                        image_slide.shapes.add_picture(output, fixed_horizontal_position*self.ppt_variables.emus_per_px, fixed_vertical_position*self.ppt_variables.emus_per_px)
+            #self.ppt_component.draw_rectangle(image_slide,self.ppt_variables.width,self.ppt_variables.height)
         return prs
 
 
@@ -247,14 +243,16 @@ class LoadingConfig(object):
 
 class ConfigObject:
     def __init__(self):
-        self.input_path = " "
-        self.output_path = " "
-        self.ppt_name = " "
-        # self.row = ""
-        # self.column = ""
-        # self.width = ""
-        # self.height = ""
-        # self.cell_number = ""
+        self.input_path = "Please choose an input folder"
+        self.output_path = "Please choose an output folder"
+        self.ppt_name = "test"
+
+        self.row = 2
+        self.column = 4
+        self.width = 26.6666
+        self.height = 15
+        self.cell_image_total = 16
+        self.show_textbox = True
         self.sort_method = 'Alphabetical A-Z'
 
 class SlideComponents:
