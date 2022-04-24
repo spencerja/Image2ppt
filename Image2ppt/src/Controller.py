@@ -200,42 +200,44 @@ class Controller():
         blank_slide = prs.slide_layouts[6]
         #start adding images on the slide
 
-        for i in range(self.img_count):
-            #prepare blank slide if the image reaches threshold
-            if i % self.ppt_variables.iter == 0:
-                image_slide = prs.slides.add_slide(blank_slide)
+        #for i in range(self.img_count):
+        for count in range(2):
+            for i in range(6):
+                x = i+6*count
+                #prepare blank slide if the image reaches threshold
+                if i % self.ppt_variables.iter == 0:
+                    image_slide = prs.slides.add_slide(blank_slide)
 
-                if self.show_textbox:
-                    cell_number = str(ceil(len(prs.slides)/self.cell_image_total))
-                    self.ppt_component.textbox(image_slide,cell_number,self.ppt_variables.width,self.ppt_variables.height)
+                    if self.show_textbox:
+                        cell_number = str(ceil(len(prs.slides)/self.cell_image_total))
+                        self.ppt_component.textbox(image_slide,cell_number,self.ppt_variables.width,self.ppt_variables.height)
 
+                #prepare image
+                current_img = Image.open(self.input_path + '/' + self.img_list[x])
 
-            #prepare image
-            current_img = Image.open(self.input_path + '/' + self.img_list[i])
+                #resize image
+                ratio = self.model.get_resize_ratio(current_img.width, current_img.height, self.ppt_variables.panel_pixel_width, self.ppt_variables.panel_pixel_height)
+                resized_img = current_img.resize((int(current_img.width * ratio), int(current_img.height * ratio)))
 
-            #resize image
-            ratio = self.model.get_resize_ratio(current_img.width, current_img.height, self.ppt_variables.panel_pixel_width, self.ppt_variables.panel_pixel_height)
-            resized_img = current_img.resize((int(current_img.width * ratio), int(current_img.height * ratio)))
+                margin_width = self.model.get_margin_in_pixel(self.ppt_variables.panel_pixel_width, resized_img.width)
+                margin_height = self.model.get_margin_in_pixel(self.ppt_variables.panel_pixel_height, resized_img.height)
 
-            margin_width = self.model.get_margin_in_pixel(self.ppt_variables.panel_pixel_width, resized_img.width)
-            margin_height = self.model.get_margin_in_pixel(self.ppt_variables.panel_pixel_height, resized_img.height)
+                #prepare panel location
+                prefixed_horizontal_location = (i % self.ppt_variables.column) * (self.ppt_variables.width_in_pixel / self.ppt_variables.column)
+                prefixed_vertical_location = (i % self.ppt_variables.iter // self.ppt_variables.column) *self.ppt_variables.height_in_pixel / self.ppt_variables.row
 
-            #prepare panel location
-            prefixed_horizontal_location = (i % self.ppt_variables.column) * (self.ppt_variables.width_in_pixel / self.ppt_variables.column)
-            prefixed_vertical_location = (i % self.ppt_variables.iter // self.ppt_variables.column) *self.ppt_variables.height_in_pixel / self.ppt_variables.row
+                #prepare image location based on panel location
+                fixed_vertical_position = self.model.apply_vertical_margin(i, self.ppt_variables.row, self.ppt_variables.column, prefixed_vertical_location, margin_height)
+                fixed_horizontal_position = prefixed_horizontal_location + margin_width
 
-            #prepare image location based on panel location
-            fixed_vertical_position = self.model.apply_vertical_margin(i, self.ppt_variables.row, self.ppt_variables.column, prefixed_vertical_location, margin_height)
-            fixed_horizontal_position = prefixed_horizontal_location + margin_width
+                #add image to a panel
+                with io.BytesIO() as output:
+                    #resized_img.save(output, format="GIF")
+                    quality_val = 100
+                    resized_img.save(output,format = "GIF",quality=quality_val)
+                    image_slide.shapes.add_picture(output, fixed_horizontal_position*self.ppt_variables.emus_per_px, fixed_vertical_position*self.ppt_variables.emus_per_px)
 
-            #add image to a panel
-            with io.BytesIO() as output:
-                #resized_img.save(output, format="GIF")
-                quality_val = 100
-                resized_img.save(output,format = "GIF",quality=quality_val)
-                image_slide.shapes.add_picture(output, fixed_horizontal_position*self.ppt_variables.emus_per_px, fixed_vertical_position*self.ppt_variables.emus_per_px)
-
-        self.ppt_component.draw_rectangle(image_slide,self.ppt_variables.width,self.ppt_variables.height)
+            self.ppt_component.draw_rectangle(image_slide,self.ppt_variables.width,self.ppt_variables.height)
 
         return prs
 
