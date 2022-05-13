@@ -1,4 +1,5 @@
 import os, os.path
+from collections.abc import Container #For python3.10 compatibility
 from pptx import Presentation
 from pptx.util import Inches, Pt
 import tkinter
@@ -142,7 +143,7 @@ class Controller():
         self.ppt_name = self.view.gui_ppt_name_textbox.get()
         self.output_path = self.view.output_path_label.cget("text")
         prs.save(self.output_path + '/' + self.ppt_name + '.pptx')
-        os.startfile(self.output_path + '/' + self.ppt_name + '.pptx')
+        open(self.output_path + '/' + self.ppt_name + '.pptx')
 
 
     def run(self):
