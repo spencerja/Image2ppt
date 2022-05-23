@@ -118,6 +118,7 @@ class Controller():
 
     def ppt_generation_process(self, event):
         #input
+        print("Starting process...")
         self.combobox_value = self.view.combobox.get()
         self.input_path = self.view.input_path_label.cget("text")
         self.img_list = self.get_images(self.input_path)
@@ -143,7 +144,8 @@ class Controller():
         self.ppt_name = self.view.gui_ppt_name_textbox.get()
         self.output_path = self.view.output_path_label.cget("text")
         prs.save(self.output_path + '/' + self.ppt_name + '.pptx')
-        open(self.output_path + '/' + self.ppt_name + '.pptx')
+        print("Done!")
+        os.startfile(self.output_path + '/' + self.ppt_name + '.pptx')
 
 
     def run(self):
