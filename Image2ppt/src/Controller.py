@@ -1,6 +1,6 @@
 import os, os.path
 from collections.abc import Container #For python3.10 compatibility
-from pptx import Presentation
+from pptx import Presentation, slide
 from pptx.util import Inches, Pt
 import tkinter
 from tkinter import filedialog
@@ -200,13 +200,21 @@ class Controller():
         cell = int(self.view.gui_cell_image_total.get())
         unique_cell_iter = ceil(self.img_count / cell)
         slide_iter = ceil(cell / self.ppt_variables.iter)
+        image_slide = prs.slides.add_slide(blank_slide)
+        if self.show_textbox:
+            cell_number = str(ceil(len(prs.slides)/slide_iter))
+            self.ppt_component.textbox(image_slide,cell_number,self.ppt_variables.width,self.ppt_variables.height)
+        slide_note_fill = []
         #start adding images on the slide
         for count in range(unique_cell_iter):
             for i in range(cell):
                 x = i+cell*count
                 #prepare blank slide if the image reaches threshold
-                if i % self.ppt_variables.iter == 0 and self.img_count > x:
+                if i % self.ppt_variables.iter == 0 and x !=0 and self.img_count > x:
+                    image_note = image_slide.notes_slide
+                    image_note.notes_text_frame.text = '\n'.join(slide_note_fill)
                     image_slide = prs.slides.add_slide(blank_slide)
+                    slide_note_fill = []
                     #produce cell count textbox
                     if self.show_textbox:
                         cell_number = str(ceil(len(prs.slides)/slide_iter))
@@ -236,6 +244,9 @@ class Controller():
                         quality_val = 100
                         resized_img.save(output,format = "GIF",quality=quality_val)
                         image_slide.shapes.add_picture(output, fixed_horizontal_position*self.ppt_variables.emus_per_px, fixed_vertical_position*self.ppt_variables.emus_per_px)
+                    slide_note_fill.append(self.img_list[x])
+        image_note = image_slide.notes_slide
+        image_note.notes_text_frame.text = '\n'.join(slide_note_fill)
             #self.ppt_component.draw_rectangle(image_slide,self.ppt_variables.width,self.ppt_variables.height)
         return prs
 
@@ -266,7 +277,6 @@ class SlideComponents:
         central_label = central_box.text_frame.add_paragraph()
         central_label.text = "Cell " + cell_number
         central_label.font.size = Pt(40)
-
 
     def draw_rectangle(self, image_slide,ppt_width,ppt_height):
         tx_width = 4
