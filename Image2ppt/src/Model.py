@@ -1,19 +1,7 @@
-import os, os.path
-from pptx import Presentation
-from pptx.util import Inches, Pt
-import tkinter
-from tkinter import filedialog
-from tkinter import *
-from tkinter import ttk
-from pptx.enum.shapes import MSO_SHAPE
-from pptx.dml.color import RGBColor
-import io
-from PIL import Image
-from math import ceil
-import math
-import time
+from pptx.util import Inches
 
-class Model():
+
+class Model:
     # get ratio for both and use the smaller one to ensure that the image would fit in the slide panel
     def get_resize_ratio(self, img_width, img_height, panel_pixel_width, panel_pixel_height):
         ratio_width = panel_pixel_width / img_width
@@ -41,3 +29,4 @@ class Model():
         else:
             fixed_vertical_position = prefixed_vertical_position + margin_height
         return fixed_vertical_position
+

@@ -5,21 +5,17 @@ from pptx.util import Inches, Pt
 import tkinter
 from tkinter import filedialog
 from tkinter import *
-from tkinter import ttk
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.dml.color import RGBColor
 from PIL import Image
 from math import ceil
-import sys
 import json
-import math
-import time
 import Model
 import View
 import io
 
 
-class PPTVariables():
+class PPTVariables:
     def __init__(self):
         self.column = 0
         self.row = 0
