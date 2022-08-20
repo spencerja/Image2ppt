@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "image2ppt"
+version = "0.1.0"
+description = ""
+authors = ["Tofu <osawa.shuto@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+python-pptx = "^0.6.21"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
